@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Bree+Serif&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cart</title>
+  </head>
+  <body>
+    <nav class="navbar">
+      <ul class="navlinks">
+        <li><a href="Home.html">Home</a></li>
+        <li><a href="Menu.html">Menu</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="Cart.html" class="cart-link">Cart</a></li>
+      </ul>
+
+      <div class="user-container">
+        <div class="nav-user">
+          <div class="user-icon" aria-label="User account">
+            <button id="user-button">h</button>
+          </div>
+        </div>
+
+        <div class="user-dropdown">
+          <div class="user-info">
+            <strong id="user-name">Za Boss</strong>
+            <p id="user-email">zaboss@gmail.com</p>
+          </div>
+          <hr />
+          <a href="#" class="user-links">Account Settings</a>
+          <a href="#" class="user-links">Orders</a>
+          <a href="#" class="logout">Log Out</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="site-body">
+      <div class="cart-container">
+        <h1>Your Cart</h1>
+
+        <div class="cart-content">
+          <div class="cart-products">
+            <h2>Products</h2>
+            <div id="products-list">
+              <div class="product-box"></div>
+            </div>
+          </div>
+
+          <div class="cart-summary">
+            <h2>Order Summary</h2>
+            <div class="amount-details">
+              <div class="amount-row">
+                <span>Subtotal:</span>
+                <span id="subtotal">0 kr</span>
+              </div>
+              <div class="amount-row">
+                <span>Tax:</span>
+                <span id="tax">0 kr</span>
+              </div>
+              <div class="amount-row total">
+                <span>Total:</span>
+                <span id="total">0 kr</span>
+              </div>
+            </div>
+            <button class="checkout-btn">Checkout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-container">
+        <div class="footer-brand">
+          <h2>Amara's Menu</h2>
+          <p>Made with love</p>
+        </div>
+        <div class="footer-links">
+          <h3>Quick Links</h3>
+          <a href="Home.html">Home</a>
+          <a href="Menu.html">Menu</a>
+          <a href="Cart.html">Cart</a>
+          <a href="#">Order now</a>
+        </div>
+
+        <div class="footer-links">
+          <h3>Follow Us</h3>
+          <a href="#">Facebook</a>
+          <a href="#">Instagram</a>
+          <a href="#">Twitter</a>
+          <a href="#">LinkedIn</a>
+        </div>
+
+        <div class="footer-end">
+          <p>&copy: 2026 Amara's Menu. All rights reserved</p>
+        </div>
+      </div>
+    </footer>
+    <script src="./js/main.js"></script>
+  </body>
+</html>

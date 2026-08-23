@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Bree+Serif&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menu</title>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
+
+    <nav class="navbar">
+      <ul class="navlinks">
+        <li><a href="Home.html" >Home</a></li>
+        <li><a href="Menu.html" class="active">Menu</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#" class="cart-link">Cart</a></li>
+      </ul>
+
+      <div class="user-container">
+        <div class="nav-user">
+          <div class="user-icon" aria-label="User account">
+            <button id="user-button">h</button>
+          </div>
+        </div>
+
+        <div class="user-dropdown">
+          <div class="user-info">
+            <strong id="user-name">Za Boss</strong>
+            <p id="user-email">zaboss@gmail.com</p>
+          </div>
+          <hr />
+          <a href="#" class="user-links">Account Settings</a>
+          <a href="#" class="user-links">Orders</a>
+          <a href="#" class="logout">Log Out</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="menu-hero">
+      <div class="carousel-container">
+        <div class="carousel-container-btngroup">
+          <button onclick="carousel_left()">
+            &lang;
+          </button>
+          <button onclick="carousel_right()">
+            &rang;
+          </button>
+        </div>
+
+        <div class="carousel-track" id="imageTrack">
+        </div>
+
+      </div>
+      <h2 class="hero-txt">Heavenly pastries <!-- <i style="color: white;">pastries</i>-->for your tastebuds</h2> 
+    </div>
+    
+    <div class="category">
+      <ul class="category-links">
+        <li><a href="#" class="active">Cookies</a></li>
+        <li><a href="#"> Bread</a></li>
+        <li><a href="#">Specials</a></li>
+      </ul>
+    </div>
+    <div class="site-body">
+      <div class="menu">
+        <div class="menu-list" id="bread-menu-home">
+          <h2 class="menu-header">
+            <div>
+              <button onclick="BreadCat()" id = "breadbtn">Breads</button> / 
+              <button onclick="CookieCat()" id = "cookiebtn">Cookies</button>
+            </div> 
+            
+          </h2>
+
+          <div class="menu-container" id="menu_container">
+          </div>
+          
+        </div>
+        <!--<div class="home-menu-list" id="cakes-menu-home">
+        <h2 class="menu-header">Cakes</h2>
+        <div class="menu-container">
+          <div class="menu-box"></div>
+          <div class="menu-box"></div>
+          <div class="menu-box"></div>
+        </div>
+      </div>
+      <div class="home-menu-list" id="specials-menu-home">
+        <h2 class="menu-header">Specials</h2>
+        <div class="menu-container">
+          <div class="menu-box"></div>
+          <div class="menu-box"></div>
+          <div class="menu-box"></div>
+        </div>
+      </div>-->
+      </div>
+    </div>
+    <footer>
+      <div class="footer-container">
+        <div class="footer-brand">
+          <h2>Amara's Menu</h2>
+          <p>Made with love</p>
+        </div>
+        <div class="footer-links">
+          <h3>Quick Links</h3>
+          <a href="Home.html">Home</a>
+          <a href="Home.html">Menu</a>
+          <a href="Home.html">Contact</a>
+          <a href="Home.html">Order now</a>
+        </div>
+
+        <div class="footer-links">
+          <h3>Follow Us</h3>
+          <a href="Home.html">Home</a>
+          <a href="Home.html">Menu</a>
+          <a href="Home.html">Contact</a>
+          <a href="Home.html">Order now</a>
+        </div>
+
+        <div class="footer-end">
+          <p>&copy: 2026 Amara's Menu. All rights reserved</p>
+        </div>
+      </div>
+    </footer>
+    <script src="./js/main.js"></script>
+  </body>
+</html>
