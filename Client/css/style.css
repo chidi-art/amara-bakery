@@ -641,7 +641,7 @@ body {
 }
 
 .hero-txt {
-  user-select: none;
+  pointer-events: none;
   position: absolute;
   font-size: 50px;
   scale: calc(1.1);
@@ -779,6 +779,16 @@ body {
 
 .plus-btn {
   border-radius: 0 0px 0px 0;
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
 }
 
 .product-qty input {
@@ -962,11 +972,10 @@ footer {
 }
 
 .carousel-track {
-  display: grid;
-  grid-template-columns: 50% 0% 50%;
+  user-select: none;
   width: 100%; 
-  background-image: url(../Images/hero.jpg);
   background-position-x: center;
+  background-color: black;
 }
 .carousel-container:hover .carousel-container-btngroup button{
   opacity: 100%;
@@ -994,14 +1003,7 @@ footer {
   opacity: 0;
 }
 
-.carousel-track .img1,.img3 {
-  scale: calc(0.8);
-  transform:matrix(0.9903, -0.1392, 0.1392, 0.9903, -200, 20);;
-  pointer-events: none;
-  filter: blur(3px);
-  outline: black 2px solid;
-} 
-.carousel-track .img2 {
+.carousel-track .img1 {
   justify-self: center;
   pointer-events: none;
   aspect-ratio: 1896 / 500;
@@ -1009,10 +1011,6 @@ footer {
   transform: translateY(38px);
   z-index: 99;
   border-bottom: 2px solid goldenrod;
-}
-.carousel-track .img1{
-  justify-self: right;
-  transform: matrix(0.9903, 0.1392, -0.1392, 0.9903, 200, 20);;
 }
 
 

@@ -13,88 +13,127 @@ const breadbtn = document.getElementById("breadbtn");
 const cookiebtn = document.getElementById("cookiebtn");
 const productBody = document.getElementById("product_body");
 
+
+
+function plus_1() {
+  let num_input = document.querySelector(".numinput");
+  let currentValue = parseInt(num_input.value) || 0;
+  
+  if (currentValue < 10) {
+    currentValue += 1;
+    num_input.value = currentValue;
+  }
+};
+
+function minus_1() {
+  let num_input = document.querySelector(".numinput");
+  let currentValue = parseInt(num_input.value) || 0;
+  
+  if (currentValue > 0) {
+    currentValue -= 1;
+    num_input.value = currentValue;
+  }
+};
+
 const images = [
   {
     src: "Images/products/IMG_0905.JPG",
     name: "Biscoff Stuffed Cookies",
     loadedname: "Biscoff Stuffed Cookies",
-    tag: "cookie"
+    tag: "cookie",
+    price: 12,
   },
   {
     src: "Images/products/IMG_0908.JPG",
     name: "Oreo Cream Cheese Loaf",
     loadedname: "Oreo Cream Cheese Loaf",
-    tag: "bread"
+    tag: "bread",
+    price: 12,
   },
   {
     src: "Images/products/IMG_0934.JPG",
     name: "Coconut Topped Loaf",
     loadedname: "Coconut Topped Loaf",
-    tag: "bread"
+    tag: "bread",
+    price: 12,
   },
   {
     src: "Images/products/IMG_0939.JPG",
     name: "Classic Chocolate Chunk Cookies",
     loadedname: "Classic Chocolate Chunk Cookies",
-    tag: "cookie"
+    tag: "cookie",
+    price: 12,
   },
   {
     src: "Images/products/IMG_0940.JPG",
     name: "Marshmallow & Chocolate Chunk Cookies",
     loadedname: "Marshmallow & Chocolate Chunk Cookies",
-    tag: "cookie"
+    tag: "cookie",
+    price: 12,
   },
   {
     src: "Images/products/IMG_0942.JPG",
     name: "M&M Cookies",
     loadedname: `<span style="color: transparent;">~~</span>M&M <span style="color: transparent;">~~</span>Cookies`,
-    tag: "cookie"
+    tag: "cookie",
+    price: 12,
   },
   {
     src: "Images/products/IMG_0943.JPG",
     name: "Oreo Chunk Cookies",
     loadedname: "Oreo Chunk Cookies",
-    tag: "cookie"
+    tag: "cookie",
+    price: 12,
   },
   {
     src: "Images/products/IMG_0946.JPG",
     name: "Variety Cookie Spread",
     loadedname: "Variety Cookie Spread",
-    tag: "cookie"
+    tag: "cookie",
+    price: 12,
   },
   {
     src: "Images/products/IMG_0947.JPG",
     name: "Oreo Crumb Cookies",
     loadedname: "Oreo Crumb Cookies",
-    tag: "cookie"
+    tag: "cookie",
+    price: 12,
   },
   {
     src: "Images/products/IMG_0948.JPG",
     name: "White Chocolate Chunk Cookies",
     loadedname: "White Chocolate Chunk Cookies",
-    tag: "cookie"
+    tag: "cookie",
+    price: 12,
   },
   {
     src: "Images/products/IMG_0952.JPG",
     name: "Pistachio & Chocolate Cookies",
     loadedname: "Pistachio & Chocolate Cookies",
-    tag: "cookie"
+    tag: "cookie",
+    price: 12,
   },
   {
     src: "Images/products/IMG_0953.JPG",
     name: "Double Chocolate Marshmallow Cookies",
     loadedname: "Double Chocolate Marshmallow Cookies",
-    tag: "cookie"
+    tag: "cookie",
+    price: 12,
   },
   {
     src: "Images/products/IMG_0958.JPG",
     name: "White Chocolate & Jam Cookies",
     loadedname: "White Chocolate & Jam Cookies",
-    tag: "cookie"
+    tag: "cookie",
+    price: 12,
   },
 ];
 
 let clicked = [false,false]
+
+setInterval(()=>{
+  carousel_right()
+},10000);
 
 function MenuOptions() {
   menuOptions.innerHTML = "";
@@ -116,25 +155,13 @@ function MenuOptions() {
   });
 }
 
-let activeCategory = null;
-
 function Category(btn) {
   const category = btn.dataset.category;
-
-  if (activeCategory === category) {
-    // clicked the same one again → close
-    activeCategory = null;
-    MenuOptions();
-    return;
-  }
-
-  activeCategory = category;
   menuOptions.innerHTML = "";
-
   images.forEach((e,index) => {
     if (e.tag == category) {
       menuOptions.innerHTML += `
-        <div class="menu-box" >
+      <div class="menu-box" >
         <div class="menu-box-div">
           <div class="menu-box-img">
             <img src="./${e.src}" />
@@ -177,9 +204,9 @@ function ProductLoad(evt) {
     </div>
     <div class="product-btns">
       <div class="product-qty">
-        <button class="qty-btn minus-btn">-</button>
+        <button class="qty-btn minus-btn" onclick = "minus_1()">-</button>
         <input class="numinput" type="number" value="0" min="0" max="10" />
-        <button class="qty-btn plus-btn">+</button>
+        <button class="qty-btn plus-btn" onclick = "plus_1()">+</button>
       </div>
       <a class="add-to-cart" href="#"> Add to Cart</a>
     </div>
@@ -189,7 +216,7 @@ function ProductLoad(evt) {
 
 MenuOptions();
 
-onlinePastrys = [
+carosel_images = [
   "first__.jpeg",
   "download0.jpeg",
   "download1.jpeg",
@@ -205,20 +232,16 @@ onlinePastrys = [
 ];
 
 
-onlinePastrysLength = onlinePastrys.length;
-let index = onlinePastrysLength;
+carosel_imagesLength = carosel_images.length;
+let index = carosel_imagesLength;
 
 function Carousel2() {
   if(index == 0){
-    index = onlinePastrysLength;
+    index = carosel_imagesLength;
   }
   track.innerHTML = "";
 
-  track.innerHTML += `
-  <img src="Images/online_pasteries/${onlinePastrys[(index-1)%onlinePastrysLength]}" class = "img1">
-  <img src="Images/online_pasteries/${onlinePastrys[index%onlinePastrysLength]}" class = "img2">
-  <img src="Images/online_pasteries/${onlinePastrys[(index+1)%onlinePastrysLength]}" class = "img3">
-  `;
+  track.innerHTML += `<img src="Images/carosel_images/${carosel_images[index%carosel_imagesLength]}" class = "img1">`;
 }
 
 function carousel_left() {
