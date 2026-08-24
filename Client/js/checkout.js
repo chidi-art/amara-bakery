@@ -12,7 +12,8 @@ let productTotal = 0;
 placeOrderBtn.addEventListener("click", (event) => {
   event.preventDefault();
   const email = document.getElementById("email").value;
-  const custName = document.getElementById("name").value;
+  const custName =
+    `${document.getElementById("firstname").value} ${document.getElementById("lastname").value}`.trim();
   const phone = document.getElementById("phone").value;
   const address = document.getElementById("address").value;
   const zip = document.getElementById("zip").value;
@@ -43,6 +44,8 @@ placeOrderBtn.addEventListener("click", (event) => {
 
   orders.push(order);
   localStorage.setItem("orders", JSON.stringify(orders));
+  localStorage.removeItem("cart");
+  window.location.href = "confirmation.html";
 });
 
 checkoutCart.forEach((product) => {
