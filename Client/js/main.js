@@ -13,27 +13,25 @@ const breadbtn = document.getElementById("breadbtn");
 const cookiebtn = document.getElementById("cookiebtn");
 const productBody = document.getElementById("product_body");
 
-
-
 function plus_1() {
   let num_input = document.querySelector(".numinput");
   let currentValue = parseInt(num_input.value) || 0;
-  
+
   if (currentValue < 10) {
     currentValue += 1;
     num_input.value = currentValue;
   }
-};
+}
 
 function minus_1() {
   let num_input = document.querySelector(".numinput");
   let currentValue = parseInt(num_input.value) || 0;
-  
+
   if (currentValue > 0) {
     currentValue -= 1;
     num_input.value = currentValue;
   }
-};
+}
 
 const images = [
   {
@@ -129,17 +127,17 @@ const images = [
   },
 ];
 
-let clicked = [false,false]
+let clicked = [false, false];
 
-setInterval(()=>{
-  carousel_right()
-},10000);
+setInterval(() => {
+  carousel_right();
+}, 10000);
 
 function MenuOptions() {
   menuOptions.innerHTML = "";
 
-  images.forEach((e,index) => {
-      menuOptions.innerHTML += `
+  images.forEach((e, index) => {
+    menuOptions.innerHTML += `
       <div class="menu-box" >
         <div class="menu-box-div">
           <div class="menu-box-img">
@@ -158,7 +156,7 @@ function MenuOptions() {
 function Category(btn) {
   const category = btn.dataset.category;
   menuOptions.innerHTML = "";
-  images.forEach((e,index) => {
+  images.forEach((e, index) => {
     if (e.tag == category) {
       menuOptions.innerHTML += `
       <div class="menu-box" >
@@ -178,12 +176,12 @@ function Category(btn) {
 }
 
 function ProductLoad(evt) {
-  index = evt.dataset.index
-  productBody.innerHTML  = ""
-  productBody.style.display = "flex"
-  document.getElementById('blocker').style.scale = 'calc(1)'
+  index = evt.dataset.index;
+  productBody.innerHTML = "";
+  productBody.style.display = "flex";
+  document.getElementById("blocker").style.scale = "calc(1)";
 
-  productBody.innerHTML +=`
+  productBody.innerHTML += `
   <div class="product-image">
   <button style = "transform: translate(-80px,20px);background: #b6410f ; font-size: 30px ;position: absolute; height: 60px; width: 60px; border-radius: 30px;border: none; color: white; font-weight: bolder;" onclick="document.getElementById('product_body').style.display = 'none';document.getElementById('blocker').style.scale = 'calc(0)';" >
     X
@@ -211,7 +209,7 @@ function ProductLoad(evt) {
       <a class="add-to-cart" href="#"> Add to Cart</a>
     </div>
   </div>
-  `
+  `;
 }
 
 MenuOptions();
@@ -231,30 +229,29 @@ carosel_images = [
   "download10.jpeg",
 ];
 
-
 carosel_imagesLength = carosel_images.length;
 let index = carosel_imagesLength;
 
 function Carousel2() {
-  if(index == 0){
+  if (index == 0) {
     index = carosel_imagesLength;
   }
   track.innerHTML = "";
 
-  track.innerHTML += `<img src="Images/carosel_images/${carosel_images[index%carosel_imagesLength]}" class = "img1">`;
+  track.innerHTML += `<img src="Images/carosel_images/${carosel_images[index % carosel_imagesLength]}" class = "img1">`;
 }
 
 function carousel_left() {
-  index-=1;
+  index -= 1;
   Carousel2();
 }
 function carousel_right() {
-  index+=1;
+  index += 1;
   Carousel2();
 }
-Carousel2()
+Carousel2();
 
-
+const checkoutTotalBox = document.getElementById("checkout-total");
 
 updateCartCount();
 userButton.addEventListener("click", () => {
@@ -293,73 +290,9 @@ addToCartBtns.forEach((button) => {
 });
 
 if (cartBox) {
-  cartBox.innerHTML = "";
-  cart.forEach((product) => {
-    cartBox.innerHTML += `
-<div class="cart-box-container">
-    <div class="cart-box-product">
-    <p>${product.name}</p>
-    </div>
-    <div class="cart-btns">
-    <div class="cart-price">${product.price} kr</div>
-    <div class="cart-qty">
-                  <button class="qty-btn minus-btn" data-name="${product.name}">−</button>
-                  <input
-                  data-name="${product.name}"
-                    class="numinput"
-                    type="number"
-                    value="${product.quantity}"
-                    min="1"
-                    max="10"
-                  />
-                  <button class="qty-btn plus-btn" data-name="${product.name}">+</button>
-    </div>
-                </div>
-                </div>`;
-  });
+  renderCart();
   updateCartTotals();
-  const increaseBtns = document.querySelectorAll(".qty-btn.plus-btn");
-  const decreaseBtns = document.querySelectorAll(".qty-btn.minus-btn");
-
-  increaseBtns.forEach((button) => {
-    button.addEventListener("click", () => {
-      const productName = button.dataset.name;
-      const product = cart.find((item) => item.name === productName);
-      if (product.quantity < 10) {
-        product.quantity++;
-        const input = document.querySelector(
-          `.numinput[data-name = "${productName}"]`,
-        );
-        input.value = product.quantity;
-
-        localStorage.setItem("cart", JSON.stringify(cart));
-        updateCartTotals();
-        updateCartCount();
-      }
-    });
-  });
-  decreaseBtns.forEach((button) => {
-    button.addEventListener("click", () => {
-      const productName = button.dataset.name;
-      const product = cart.find((item) => item.name === productName);
-      if (product.quantity > 1) {
-        product.quantity--;
-      } else {
-        const productIndex = cart.findIndex(
-          (item) => item.name === productName,
-        );
-        cart.splice(productIndex, 1);
-      }
-      const input = document.querySelector(
-        `.numinput[data-name = "${productName}"]`,
-      );
-      input.value = product.quantity;
-      localStorage.setItem("cart", JSON.stringify(cart));
-
-      updateCartTotals();
-      updateCartCount();
-    });
-  });
+  setQtyBtns();
 }
 
 function updateCartCount() {
@@ -386,4 +319,74 @@ function updateCartTotals() {
   console.log(subTotal);
 }
 
+function renderCart() {
+  if (!cartBox) return;
+  cartBox.innerHTML = "";
+  cart.forEach((product) => {
+    cartBox.innerHTML += `
+<div class="cart-box-container">
+    <div class="cart-box-product">
+    <p>${product.name}</p>
+    </div>
+    <div class="cart-btns">
+    <div class="cart-price">${product.price * product.quantity} kr</div>
+    <div class="cart-qty">
+                  <button class="qty-btn minus-btn" data-name="${product.name}">−</button>
+                  <input
+                  data-name="${product.name}"
+                    class="numinput"
+                    type="number"
+                    value="${product.quantity}"
+                    min="1"
+                    max="10"
+                    readonly
+                  />
+                  <button class="qty-btn plus-btn" data-name="${product.name}">+</button>
+    </div>
+                </div>
+                </div>`;
+  });
+}
 
+function setQtyBtns() {
+  const increaseBtns = document.querySelectorAll(".qty-btn.plus-btn");
+  const decreaseBtns = document.querySelectorAll(".qty-btn.minus-btn");
+
+  increaseBtns.forEach((button) => {
+    button.addEventListener("click", () => {
+      const productName = button.dataset.name;
+      const product = cart.find((item) => item.name === productName);
+      if (!product) return;
+      if (product.quantity < 10) {
+        product.quantity++;
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        renderCart();
+        updateCartTotals();
+        updateCartCount();
+        setQtyBtns();
+      }
+    });
+  });
+  decreaseBtns.forEach((button) => {
+    button.addEventListener("click", () => {
+      const productName = button.dataset.name;
+      const product = cart.find((item) => item.name === productName);
+      if (!product) return;
+      if (product.quantity > 1) {
+        product.quantity--;
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+      } else {
+        const productIndex = cart.findIndex(
+          (item) => item.name === productName,
+        );
+        cart.splice(productIndex, 1);
+      }
+      renderCart();
+      setQtyBtns();
+      updateCartTotals();
+      updateCartCount();
+    });
+  });
+}

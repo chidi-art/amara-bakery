@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Bree+Serif&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout</title>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <ul class="navlinks">
+        <li><a href="Home.html">Home</a></li>
+        <li><a href="Menu.html">Menu</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="Cart.html" class="cart-link">Cart</a></li>
+      </ul>
+      <div class="user-container">
+        <div class="nav-user">
+          <div class="user-icon" aria-label="User account">
+            <button id="user-button">h</button>
+          </div>
+        </div>
+        <div class="user-dropdown">
+          <div class="user-info">
+            <strong id="user-name">Za Boss</strong>
+            <p id="user-email">zaboss@gmail.com</p>
+          </div>
+          <hr />
+          <a href="#" class="user-links">Account Settings</a>
+          <a href="#" class="user-links">Orders</a>
+          <a href="#" class="logout">Log Out</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="checkout-site-body">
+      <div class="checkout-container">
+        <h1>Checkout</h1>
+        <div class="checkout-info">
+          <form class="checkout-form">
+            <div class="checkout-contact">
+              <h2>Contact Information</h2>
+              <!-- <label for="name">Full name</label>-->
+              <input
+                placeholder="First name"
+                id="firstname"
+                name="firstname"
+                type="text"
+                required
+              />
+              <input
+                placeholder="Last name"
+                id="lastname"
+                name="lastname"
+                type="text"
+                required
+              />
+              <!--<label for="email">Email</label>-->
+              <input
+                placeholder="Email"
+                id="email"
+                name="email"
+                type="email"
+                required
+              />
+              <!-- <label for="phone">Phone number</label>-->
+              <input
+                placeholder="Phone"
+                id="phone"
+                name="phone"
+                type="tel"
+                required
+              />
+            </div>
+
+            <div class="checkout-address">
+              <h2>Address Information</h2>
+              <input
+                class="address-full"
+                placeholder="Address"
+                id="address"
+                name="address"
+                type="text"
+                required
+              />
+              <div class="checkout-field">
+                <!--<label for="city">City</label>-->
+                <select id="city" name="city" required>
+                  <option value="">Select city</option>
+                  <option value="stockholm">Stockholm</option>
+                  <option value="goteborg">Goteborg</option>
+                  <option value="malmo">Malmo</option>
+                  <option value="uppsala">Uppsala</option>
+                </select>
+              </div>
+              <div class="checkout-field">
+                <!--<label for="state">State</label>-->
+                <select id="state" name="state" required>
+                  <option value="">Select county</option>
+                  <option value="stockholm">Stockholm County</option>
+                  <option value="vastra-gotaland">
+                    Vastra Gotaland County
+                  </option>
+                  <option value="skane">Skane County</option>
+                  <option value="uppsala">Uppsala County</option>
+                </select>
+              </div>
+              <div class="checkout-field">
+                <!-- <label for="zip">ZIP code</label>-->
+                <input
+                  placeholder="ZIP code"
+                  id="zip"
+                  name="zip"
+                  type="text"
+                  inputmode="numeric"
+                  pattern="[0-9]{5}"
+                  maxlength="5"
+                  required
+                />
+              </div>
+            </div>
+            <h2>Payment Information</h2>
+          </form>
+        </div>
+
+        <div class="checkout-summary">
+          <h2>Order total</h2>
+          <div class="checkout-amt-container">
+            <div class="tag-row">
+              <span>Product Total:</span>
+              <span>Delivery:</span>
+              <span>Total:</span>
+            </div>
+            <div class="checkout-numbers">
+              <strong id="product-total">0 kr</strong>
+              <strong id="delivery-total">0 kr</strong>
+              <strong id="checkout-total">0 kr</strong>
+            </div>
+          </div>
+          <button class="checkout-btn" type="submit">Place order</button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-container">
+        <div class="footer-brand">
+          <h2>Amara's Menu</h2>
+          <p>Made with love</p>
+        </div>
+        <div class="footer-links">
+          <h3>Quick Links</h3>
+          <a href="Home.html">Home</a>
+          <a href="Menu.html">Menu</a>
+          <a href="Cart.html">Cart</a>
+        </div>
+        <div class="footer-links">
+          <h3>Follow Us</h3>
+          <a href="#">Facebook</a>
+          <a href="#">Instagram</a>
+          <a href="#">Twitter</a>
+        </div>
+        <div class="footer-end">
+          <p>&copy; 2026 Amara's Menu. All rights reserved</p>
+        </div>
+      </div>
+    </footer>
+    <script src="./js/main.js"></script>
+    <script src="./js/checkout.js"></script>
+  </body>
+</html>

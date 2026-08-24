@@ -8,9 +8,9 @@
       rel="stylesheet"
     />
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="./css/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cart</title>
+    <title>Order Confirmed</title>
+    <link rel="stylesheet" href="./css/style.css" />
   </head>
   <body>
     <nav class="navbar">
@@ -20,14 +20,12 @@
         <li><a href="#">Contact</a></li>
         <li><a href="Cart.html" class="cart-link">Cart</a></li>
       </ul>
-
       <div class="user-container">
         <div class="nav-user">
           <div class="user-icon" aria-label="User account">
             <button id="user-button">h</button>
           </div>
         </div>
-
         <div class="user-dropdown">
           <div class="user-info">
             <strong id="user-name">Za Boss</strong>
@@ -41,37 +39,40 @@
       </div>
     </nav>
 
-    <div class="site-body">
-      <div class="cart-container">
-        <h1>Your Cart</h1>
+    <div class="confirmation-page">
+      <div class="confirmation-card" aria-labelledby="confirmation-title">
+        <p class="confirmation-mark">&#127881;</p>
+        <h1 id="confirmation-title">Order Confirmed</h1>
+        <p class="confirmation-intro">Thank you for your order.</p>
 
-        <div class="cart-content">
-          <div class="cart-products">
-            <h2>Products</h2>
-            <div id="products-list">
-              <div class="product-box"></div>
-            </div>
+        <div class="confirmation-details">
+          <div class="confirmation-detail">
+            <span>Order number</span>
+            <strong id="confirmation-order-number">-</strong>
           </div>
-
-          <div class="cart-summary">
-            <h2>Order Summary</h2>
-            <div class="amount-details">
-              <div class="amount-row">
-                <span>Subtotal:</span>
-                <span id="subtotal">0 kr</span>
-              </div>
-              <div class="amount-row">
-                <span>Tax:</span>
-                <span id="tax">0 kr</span>
-              </div>
-              <div class="amount-row total">
-                <span>Total:</span>
-                <span id="total">0 kr</span>
-              </div>
-            </div>
-            <a class="checkout-btn" href="Checkout.html">Checkout</a>
+          <div class="confirmation-detail">
+            <span>Customer name</span>
+            <strong id="confirmation-customer-name">-</strong>
+          </div>
+          <div class="confirmation-detail confirmation-detail-wide">
+            <span>Ordered items</span>
+            <strong id="confirmation-items">-</strong>
+          </div>
+          <div class="confirmation-detail">
+            <span>Total</span>
+            <strong id="confirmation-total">-</strong>
+          </div>
+          <div class="confirmation-detail">
+            <span>Phone number</span>
+            <strong id="confirmation-phone">-</strong>
+          </div>
+          <div class="confirmation-detail confirmation-detail-wide">
+            <span>Delivery address</span>
+            <strong id="confirmation-address">-</strong>
           </div>
         </div>
+
+        <a class="confirmation-menu-button" href="Menu.html">Back to Menu</a>
       </div>
     </div>
 
@@ -86,22 +87,19 @@
           <a href="Home.html">Home</a>
           <a href="Menu.html">Menu</a>
           <a href="Cart.html">Cart</a>
-          <a href="#">Order now</a>
         </div>
-
         <div class="footer-links">
           <h3>Follow Us</h3>
           <a href="#">Facebook</a>
           <a href="#">Instagram</a>
           <a href="#">Twitter</a>
-          <a href="#">LinkedIn</a>
         </div>
-
         <div class="footer-end">
-          <p>&copy: 2026 Amara's Menu. All rights reserved</p>
+          <p>&copy; 2026 Amara's Menu. All rights reserved</p>
         </div>
       </div>
     </footer>
     <script src="./js/main.js"></script>
+    <script src="./js/confirmation.js"></script>
   </body>
 </html>
