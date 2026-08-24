@@ -7,6 +7,7 @@ const taxBox = document.getElementById("tax");
 const totalBox = document.getElementById("total");
 const subTotalBox = document.getElementById("subtotal");
 const cartLink = document.querySelector(".cart-link");
+const checkoutTotalBox = document.getElementById("checkout-total");
 
 updateCartCount();
 userButton.addEventListener("click", () => {
@@ -45,73 +46,9 @@ addToCartBtns.forEach((button) => {
 });
 
 if (cartBox) {
-  cartBox.innerHTML = "";
-  cart.forEach((product) => {
-    cartBox.innerHTML += `
-<div class="cart-box-container">
-    <div class="cart-box-product">
-    <p>${product.name}</p>
-    </div>
-    <div class="cart-btns">
-    <div class="cart-price">${product.price} kr</div>
-    <div class="cart-qty">
-                  <button class="qty-btn minus-btn" data-name="${product.name}">−</button>
-                  <input
-                  data-name="${product.name}"
-                    class="numinput"
-                    type="number"
-                    value="${product.quantity}"
-                    min="1"
-                    max="10"
-                  />
-                  <button class="qty-btn plus-btn" data-name="${product.name}">+</button>
-    </div>
-                </div>
-                </div>`;
-  });
+  renderCart();
   updateCartTotals();
-  const increaseBtns = document.querySelectorAll(".qty-btn.plus-btn");
-  const decreaseBtns = document.querySelectorAll(".qty-btn.minus-btn");
-
-  increaseBtns.forEach((button) => {
-    button.addEventListener("click", () => {
-      const productName = button.dataset.name;
-      const product = cart.find((item) => item.name === productName);
-      if (product.quantity < 10) {
-        product.quantity++;
-        const input = document.querySelector(
-          `.numinput[data-name = "${productName}"]`,
-        );
-        input.value = product.quantity;
-
-        localStorage.setItem("cart", JSON.stringify(cart));
-        updateCartTotals();
-        updateCartCount();
-      }
-    });
-  });
-  decreaseBtns.forEach((button) => {
-    button.addEventListener("click", () => {
-      const productName = button.dataset.name;
-      const product = cart.find((item) => item.name === productName);
-      if (product.quantity > 1) {
-        product.quantity--;
-      } else {
-        const productIndex = cart.findIndex(
-          (item) => item.name === productName,
-        );
-        cart.splice(productIndex, 1);
-      }
-      const input = document.querySelector(
-        `.numinput[data-name = "${productName}"]`,
-      );
-      input.value = product.quantity;
-      localStorage.setItem("cart", JSON.stringify(cart));
-
-      updateCartTotals();
-      updateCartCount();
-    });
-  });
+  setQtyBtns();
 }
 
 function updateCartCount() {
@@ -136,4 +73,76 @@ function updateCartTotals() {
   taxBox.textContent = `${tax} kr`;
   totalBox.textContent = `${total} kr`;
   console.log(subTotal);
+}
+
+function renderCart() {
+  if (!cartBox) return;
+  cartBox.innerHTML = "";
+  cart.forEach((product) => {
+    cartBox.innerHTML += `
+<div class="cart-box-container">
+    <div class="cart-box-product">
+    <p>${product.name}</p>
+    </div>
+    <div class="cart-btns">
+    <div class="cart-price">${product.price * product.quantity} kr</div>
+    <div class="cart-qty">
+                  <button class="qty-btn minus-btn" data-name="${product.name}">−</button>
+                  <input
+                  data-name="${product.name}"
+                    class="numinput"
+                    type="number"
+                    value="${product.quantity}"
+                    min="1"
+                    max="10"
+                    readonly
+                  />
+                  <button class="qty-btn plus-btn" data-name="${product.name}">+</button>
+    </div>
+                </div>
+                </div>`;
+  });
+}
+
+function setQtyBtns() {
+  const increaseBtns = document.querySelectorAll(".qty-btn.plus-btn");
+  const decreaseBtns = document.querySelectorAll(".qty-btn.minus-btn");
+
+  increaseBtns.forEach((button) => {
+    button.addEventListener("click", () => {
+      const productName = button.dataset.name;
+      const product = cart.find((item) => item.name === productName);
+      if (!product) return;
+      if (product.quantity < 10) {
+        product.quantity++;
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        renderCart();
+        updateCartTotals();
+        updateCartCount();
+        setQtyBtns();
+      }
+    });
+  });
+  decreaseBtns.forEach((button) => {
+    button.addEventListener("click", () => {
+      const productName = button.dataset.name;
+      const product = cart.find((item) => item.name === productName);
+      if (!product) return;
+      if (product.quantity > 1) {
+        product.quantity--;
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+      } else {
+        const productIndex = cart.findIndex(
+          (item) => item.name === productName,
+        );
+        cart.splice(productIndex, 1);
+      }
+      renderCart();
+      setQtyBtns();
+      updateCartTotals();
+      updateCartCount();
+    });
+  });
 }
