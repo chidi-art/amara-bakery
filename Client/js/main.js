@@ -1,3 +1,4 @@
+const userButton = document.getElementById("user-button");
 const userDropdown = document.querySelector(".user-dropdown");
 const cart = JSON.parse(localStorage.getItem("cart")) || [];
 const cartBox = document.querySelector(".product-box");
@@ -7,29 +8,177 @@ const subTotalBox = document.getElementById("subtotal");
 const cartLink = document.querySelector(".cart-link");
 const track = document.getElementById("imageTrack");
 const menuOptions = document.getElementById("menu_container");
+const breadbtn = document.getElementById("breadbtn");
+const cookiebtn = document.getElementById("cookiebtn");
+
+function plus_1() {
+  let num_input = document.querySelector(".numinput");
+  let currentValue = parseInt(num_input.value) || 0;
+
+  if (currentValue < 10) {
+    currentValue += 1;
+    num_input.value = currentValue;
+  }
+}
+
+function minus_1() {
+  let num_input = document.querySelector(".numinput");
+  let currentValue = parseInt(num_input.value) || 0;
+
+  if (currentValue > 0) {
+    currentValue -= 1;
+    num_input.value = currentValue;
+  }
+}
 
 const images = [
-  ["IMG_0905.JPG", "Biscoff Stuffed Cookies", "cookie"],
-  ["IMG_0908.JPG", "Oreo Cream Cheese Loaf", "bread"],
-  ["IMG_0934.JPG", "Coconut Topped Loaf", "bread"],
-  ["IMG_0939.JPG", "Classic Chocolate Chunk Cookies", "cookie"],
-  ["IMG_0940.JPG", "Marshmallow & Chocolate Chunk Cookies", "cookie"],
-  ["IMG_0942.JPG", "M&M Cookies", "cookie"],
-  ["IMG_0943.JPG", "Oreo Chunk Cookies", "cookie"],
-  ["IMG_0946.JPG", "Variety Cookie Spread", "cookie"],
-  ["IMG_0947.JPG", "Oreo Crumb Cookies", "cookie"],
-  ["IMG_0948.JPG", "White Chocolate Chunk Cookies", "cookie"],
-  ["IMG_0952.JPG", "Pistachio & Chocolate Cookies", "cookie"],
-  ["IMG_0953.JPG", "Double Chocolate Marshmallow Cookies", "cookie"],
-  ["IMG_0958.JPG", "White Chocolate & Jam Cookies", "cookie"],
-].map(([file, name, tag]) => ({
-  src: `Images/products/${file}`,
-  name,
-  tag,
-  price: 12,
-}));
+  {
+    src: "Images/products/IMG_0905.JPG",
+    name: "Biscoff Stuffed Cookies",
+    loadedname: "Biscoff Stuffed Cookies",
+    tag: "cookie",
+    price: 12,
+  },
+  {
+    src: "Images/products/IMG_0908.JPG",
+    name: "Oreo Cream Cheese Loaf",
+    loadedname: "Oreo Cream Cheese Loaf",
+    tag: "bread",
+    price: 12,
+  },
+  {
+    src: "Images/products/IMG_0934.JPG",
+    name: "Coconut Topped Loaf",
+    loadedname: "Coconut Topped Loaf",
+    tag: "bread",
+    price: 12,
+  },
+  {
+    src: "Images/products/IMG_0939.JPG",
+    name: "Classic Chocolate Chunk Cookies",
+    loadedname: "Classic Chocolate Chunk Cookies",
+    tag: "cookie",
+    price: 12,
+  },
+  {
+    src: "Images/products/IMG_0940.JPG",
+    name: "Marshmallow & Chocolate Chunk Cookies",
+    loadedname: "Marshmallow & Chocolate Chunk Cookies",
+    tag: "cookie",
+    price: 12,
+  },
+  {
+    src: "Images/products/IMG_0942.JPG",
+    name: "M&M Cookies",
+    loadedname: `<span style="color: transparent;">~~</span>M&M <span style="color: transparent;">~~</span>Cookies`,
+    tag: "cookie",
+    price: 12,
+  },
+  {
+    src: "Images/products/IMG_0943.JPG",
+    name: "Oreo Chunk Cookies",
+    loadedname: "Oreo Chunk Cookies",
+    tag: "cookie",
+    price: 12,
+  },
+  {
+    src: "Images/products/IMG_0946.JPG",
+    name: "Variety Cookie Spread",
+    loadedname: "Variety Cookie Spread",
+    tag: "cookie",
+    price: 12,
+  },
+  {
+    src: "Images/products/IMG_0947.JPG",
+    name: "Oreo Crumb Cookies",
+    loadedname: "Oreo Crumb Cookies",
+    tag: "cookie",
+    price: 12,
+  },
+  {
+    src: "Images/products/IMG_0948.JPG",
+    name: "White Chocolate Chunk Cookies",
+    loadedname: "White Chocolate Chunk Cookies",
+    tag: "cookie",
+    price: 12,
+  },
+  {
+    src: "Images/products/IMG_0952.JPG",
+    name: "Pistachio & Chocolate Cookies",
+    loadedname: "Pistachio & Chocolate Cookies",
+    tag: "cookie",
+    price: 12,
+  },
+  {
+    src: "Images/products/IMG_0953.JPG",
+    name: "Double Chocolate Marshmallow Cookies",
+    loadedname: "Double Chocolate Marshmallow Cookies",
+    tag: "cookie",
+    price: 12,
+  },
+  {
+    src: "Images/products/IMG_0958.JPG",
+    name: "White Chocolate & Jam Cookies",
+    loadedname: "White Chocolate & Jam Cookies",
+    tag: "cookie",
+    price: 12,
+  },
+];
 
-const carouselImages = [
+let clicked = [false, false];
+
+setInterval(() => {
+  carousel_right();
+}, 10000);
+
+function MenuOptions() {
+  if (!menuOptions) return;
+  menuOptions.innerHTML = "";
+
+  images.forEach((e, index) => {
+    menuOptions.innerHTML += `
+      <div class="menu-box" >
+        <div class="menu-box-div" onclick="if (!event.target.closest('.menu-add-to-cart')) location.href='Product details.html?product=${index}'" data-index="${index}">
+          <div class="menu-box-img">
+            <img src="./${e.src}" />
+          </div>
+          <div class="menu-box-txt">
+            <span class="menu-box-name">${e.name}</span>
+            <span class="menu-box-price">12kr</span>
+          </div>
+          <button class="menu-add-to-cart" type="button" data-index="${index}" data-name="${e.name}" data-price="${e.price}">Add to Cart</button>
+        </div>
+      </div>`;
+  });
+}
+
+function Category(btn) {
+  if (!menuOptions) return;
+  const category = btn.dataset.category;
+  menuOptions.innerHTML = "";
+  images.forEach((e, index) => {
+    if (e.tag == category) {
+      menuOptions.innerHTML += `
+      <div class="menu-box" >
+        <div class="menu-box-div" onclick="if (!event.target.closest('.menu-add-to-cart')) location.href='Product details.html?product=${index}'" data-index="${index}">
+          <div class="menu-box-img">
+            <img src="./${e.src}" />
+          </div>
+          <div class="menu-box-txt">
+            <span class="menu-box-name">${e.name}</span>
+            <span class="menu-box-price">12kr</span>
+          </div>
+          <button class="menu-add-to-cart" type="button" data-index="${index}" data-name="${e.name}" data-price="${e.price}">Add to Cart</button>
+        </div>
+      </div>`;
+    }
+  });
+}
+
+MenuOptions();
+initializeProductDetails();
+
+carosel_images = [
   "first__.jpeg",
   "download0.jpeg",
   "download1.jpeg",
@@ -44,91 +193,103 @@ const carouselImages = [
   "download10.jpeg",
 ];
 
-let carouselIndex = 0;
+carosel_imagesLength = carosel_images.length;
+let index = carosel_imagesLength;
 
-function renderCarousel() {
-  if (track)
-    track.innerHTML = `<img src="Images/carosel_images/${carouselImages[carouselIndex]}" alt="Fresh pastry">`;
+function Carousel2() {
+  if (!track) return;
+  if (index == 0) {
+    index = carosel_imagesLength;
+  }
+  track.innerHTML = "";
+
+  track.innerHTML += `<img src="Images/carosel_images/${carosel_images[index % carosel_imagesLength]}" class = "img1">`;
 }
 
 function carousel_left() {
-  if (!track) return;
-  carouselIndex =
-    (carouselIndex - 1 + carouselImages.length) % carouselImages.length;
-  renderCarousel();
+  index -= 1;
+  Carousel2();
 }
-
 function carousel_right() {
-  if (!track) return;
-  carouselIndex = (carouselIndex + 1) % carouselImages.length;
-  renderCarousel();
+  index += 1;
+  Carousel2();
+}
+Carousel2();
+
+const checkoutTotalBox = document.getElementById("checkout-total");
+
+updateCartCount();
+if (userButton && userDropdown) {
+  userButton.addEventListener("click", () => {
+    userDropdown.classList.toggle("show");
+  });
 }
 
-function productMarkup(product, index) {
-  return `<div class="menu-box">
-    <a href="Product details.html?product=${index}">
-      <div class="menu-box-img"><img src="./${product.src}" alt="${product.name}"></div>
-      <div class="menu-box-txt"><span class="menu-box-name">${product.name}</span><span class="menu-box-price">${product.price}kr</span></div>
-    </a>
-    <button class="menu-add-to-cart" type="button" data-index="${index}" data-name="${product.name}" data-price="${product.price}">Add to Cart</button>
-  </div>`;
-}
-
-function renderProducts(category) {
-  if (menuOptions)
-    menuOptions.innerHTML = images
-      .map((product, index) =>
-        !category || product.tag === category
-          ? productMarkup(product, index)
-          : "",
-      )
-      .join("");
-}
-
-function initializeProductLinks() {
-  document
-    .querySelectorAll('.menu-box a[href="Product details.html"]')
-    .forEach((link, index) => {
-      const product = images[index % images.length];
-      const box = link.closest(".menu-box");
-      link.href = `Product details.html?product=${index % images.length}`;
-      link.querySelector("img").src = `./${product.src}`;
-      link.querySelector("img").alt = product.name;
-      link.querySelector(".menu-box-name").textContent = product.name;
-      link.querySelector(".menu-box-price").textContent = `${product.price}kr`;
-      const button = box.querySelector(".menu-add-to-cart");
-      button.type = "button";
-      button.dataset.name = product.name;
-      button.dataset.price = product.price;
-    });
-}
-
-function MenuOptions() {
-  renderProducts();
-}
-
-function Category(button) {
-  renderProducts(button.dataset.category);
-}
-
-function updateCartCount() {
-  if (cartLink)
-    cartLink.textContent = `Cart (${cart.reduce((total, product) => total + product.quantity, 0)})`;
-}
+document.addEventListener("click", (event) => {
+  const checkoutLink = event.target.closest(
+    '.checkout-btn[href="checkout.html"]',
+  );
+  if (checkoutLink?.classList.contains("disabled")) {
+    event.preventDefault();
+    return;
+  }
+  const addButton = event.target.closest(".menu-add-to-cart, .add-to-cart");
+  if (addButton) {
+    event.preventDefault();
+    addToCart(addButton);
+  }
+  const productQuantityButton = event.target.closest(".product-qty .qty-btn");
+  if (productQuantityButton) {
+    const input = productQuantityButton.parentElement.querySelector("input");
+    const change = productQuantityButton.classList.contains("plus-btn")
+      ? 1
+      : -1;
+    const details = productQuantityButton.closest(".product-body");
+    const name = details?.querySelector(".product-name")?.textContent.trim();
+    const product = cart.find((item) => item.name === name);
+    const quantity = Math.max(
+      0,
+      Math.min(10, (product?.quantity || 0) + change),
+    );
+    if (product && quantity > 0) product.quantity = quantity;
+    else if (product) cart.splice(cart.indexOf(product), 1);
+    else if (quantity > 0) {
+      const price = Number(
+        details
+          .querySelector(".product-price")
+          .textContent.replace(/[^\d.]/g, ""),
+      );
+      const image = details.querySelector(".product-img").getAttribute("src");
+      cart.push({ name, price, quantity, image });
+    }
+    input.value = quantity;
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartCount();
+    updateCartTotals();
+  }
+  if (
+    userButton &&
+    userDropdown &&
+    !userButton.contains(event.target) &&
+    !userDropdown.contains(event.target)
+  ) {
+    userDropdown.classList.remove("show");
+  }
+});
 
 function addToCart(button) {
   const box = button.closest(".menu-box");
-  const productBody = button.closest(".product-body");
+  const details = button.closest(".product-body");
   const name =
     button.dataset.name ||
     box?.querySelector(".menu-box-name")?.textContent.trim() ||
-    productBody?.querySelector(".product-name")?.textContent.trim();
+    details?.querySelector(".product-name")?.textContent.trim();
   const price = Number(
     button.dataset.price ||
       box
         ?.querySelector(".menu-box-price")
         ?.textContent.replace(/[^\d.]/g, "") ||
-      productBody
+      details
         ?.querySelector(".product-price")
         ?.textContent.replace(/[^\d.]/g, "") ||
       0,
@@ -137,113 +298,167 @@ function addToCart(button) {
     1,
     Math.min(
       10,
-      Number(productBody?.querySelector(".product-qty input")?.value) || 1,
+      Number(details?.querySelector(".product-qty input")?.value) || 1,
     ),
   );
-  if (!name || !price) return;
   const image =
     box?.querySelector("img")?.getAttribute("src") ||
-    productBody?.querySelector(".product-img")?.getAttribute("src") ||
-    "";
+    details?.querySelector(".product-img")?.getAttribute("src") ||
+    "Images/products/IMG_0979.JPG";
+  if (!name || !price) return;
   const product = cart.find((item) => item.name === name);
   if (product) {
-    product.quantity = Math.min(10, product.quantity + quantity);
+    product.quantity = Math.min(10, product.quantity + 1);
     product.image ||= image;
   } else cart.push({ name, price, quantity, image });
+  const savedProduct = cart.find((item) => item.name === name);
+  const quantityInput = details?.querySelector(".product-qty input");
+  if (quantityInput) quantityInput.value = savedProduct.quantity;
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCount();
   button.textContent = "Added";
   setTimeout(() => (button.textContent = "Add to Cart"), 1000);
 }
 
+function initializeProductDetails() {
+  const details = document.querySelector(".product-body");
+  if (!details || details.id === "product_body") return;
+  const productIndex = Number(
+    new URLSearchParams(location.search).get("product"),
+  );
+  const product =
+    images[
+      Number.isInteger(productIndex) && productIndex >= 0 ? productIndex : 0
+    ];
+  details.querySelector(".product-img").src = `./${product.src}`;
+  details.querySelector(".product-img").alt = product.name;
+  details.querySelector(".product-name").textContent = product.name;
+  details.querySelector(".product-price").textContent = `${product.price}kr`;
+  const addButton = details.querySelector(".add-to-cart");
+  addButton.dataset.name = product.name;
+  addButton.dataset.price = product.price;
+  const cartProduct = cart.find((item) => item.name === product.name);
+  details.querySelector(".product-qty input").value = cartProduct?.quantity ?? 0;
+  document.title = product.name;
+}
+
+if (cartBox) {
+  renderCart();
+  updateCartTotals();
+  setQtyBtns();
+}
+
+function updateCartCount() {
+  const cartCount = cart.reduce((total, product) => {
+    return total + product.quantity;
+  }, 0);
+
+  if (cartLink) cartLink.textContent = `Cart (${cartCount})`;
+  const checkoutLink = document.querySelector(
+    '.checkout-btn[href="checkout.html"]',
+  );
+  if (checkoutLink) {
+    checkoutLink.classList.toggle("disabled", cartCount === 0);
+    checkoutLink.setAttribute("aria-disabled", cartCount === 0);
+    checkoutLink.tabIndex = cartCount === 0 ? -1 : 0;
+  }
+}
+
+function getProductImage(product) {
+  return (
+    product.image ||
+    images.find((item) => item.name === product.name)?.src ||
+    "Images/products/IMG_0979.JPG"
+  );
+}
+
 function updateCartTotals() {
   if (!subTotalBox || !taxBox || !totalBox) return;
-  const subtotal = cart.reduce(
-    (sum, product) => sum + product.price * product.quantity,
-    0,
-  );
-  const tax = subtotal * 0.75;
-  subTotalBox.textContent = `${subtotal} kr`;
+  let subTotal = 0;
+  const taxRate = 0.75;
+  cart.forEach((product) => {
+    subTotal += product.price * product.quantity;
+    console.log(product);
+  });
+
+  let tax = taxRate * subTotal;
+  let total = subTotal + tax;
+  subTotalBox.textContent = `${subTotal} kr`;
   taxBox.textContent = `${tax} kr`;
-  totalBox.textContent = `${subtotal + tax} kr`;
+  totalBox.textContent = `${total} kr`;
+  console.log(subTotal);
 }
 
 function renderCart() {
   if (!cartBox) return;
-  cartBox.hidden = cart.length === 0;
-  cartBox.innerHTML = cart
-    .map(
-      (product) => `<div class="cart-box-container">
-    <div class="cart-box-product"><img src="${product.image || "./Images/products/IMG_0979.JPG"}" alt="${product.name}"><p>${product.name}</p></div><div class="cart-btns">
-    <div class="cart-price">${product.price * product.quantity} kr</div><div class="cart-qty">
-    <button class="qty-btn minus-btn" type="button" data-name="${product.name}">-</button>
-    <input class="numinput" type="number" value="${product.quantity}" readonly>
-    <button class="qty-btn plus-btn" type="button" data-name="${product.name}">+</button>
-    </div></div></div>`,
-    )
-    .join("");
-}
-
-function changeQuantity(button, amount) {
-  const product = cart.find((item) => item.name === button.dataset.name);
-  if (!product) return;
-  product.quantity += amount;
-  if (product.quantity < 1) cart.splice(cart.indexOf(product), 1);
-  if (product.quantity > 10) product.quantity = 10;
+  cartBox.innerHTML = "";
   localStorage.setItem("cart", JSON.stringify(cart));
-  renderCart();
-  updateCartTotals();
-  updateCartCount();
+  cart.forEach((product) => {
+    cartBox.innerHTML += `
+<div class="cart-box-container">
+    <div class="cart-box-product">
+  <img src="./${getProductImage(product)}" alt="${product.name}" />
+    <p>${product.name}</p>
+    </div>
+    <div class="cart-btns">
+    <div class="cart-price">${product.price * product.quantity} kr</div>
+    <div class="cart-qty">
+                  <button class="qty-btn minus-btn" data-name="${product.name}">−</button>
+                  <input
+                  data-name="${product.name}"
+                    class="numinput"
+                    type="number"
+                    value="${product.quantity}"
+                    min="1"
+                    max="10"
+                    readonly
+                  />
+                  <button class="qty-btn plus-btn" data-name="${product.name}">+</button>
+    </div>
+                </div>
+                </div>`;
+  });
 }
 
-document.addEventListener("click", (event) => {
-  const addButton = event.target.closest(".menu-add-to-cart, .add-to-cart");
-  if (addButton) {
-    event.preventDefault();
-    addToCart(addButton);
-  }
-  const quantityButton = event.target.closest(".cart-qty .qty-btn");
-  if (quantityButton)
-    changeQuantity(
-      quantityButton,
-      quantityButton.classList.contains("plus-btn") ? 1 : -1,
-    );
-  const productQuantityButton = event.target.closest(".product-qty .qty-btn");
-  if (productQuantityButton) {
-    const input = productQuantityButton.parentElement.querySelector("input");
-    input.value = Math.max(
-      0,
-      Math.min(
-        10,
-        Number(input.value) +
-          (productQuantityButton.classList.contains("plus-btn") ? 1 : -1),
-      ),
-    );
-  }
-  if (event.target.closest("#user-button"))
-    userDropdown?.classList.toggle("show");
-  else if (!event.target.closest(".user-container"))
-    userDropdown?.classList.remove("show");
-});
+function setQtyBtns() {
+  const increaseBtns = document.querySelectorAll(".qty-btn.plus-btn");
+  const decreaseBtns = document.querySelectorAll(".qty-btn.minus-btn");
 
-renderProducts();
-initializeProductLinks();
-renderCarousel();
-if (track) setInterval(carousel_right, 10000);
-renderCart();
-updateCartTotals();
-updateCartCount();
+  increaseBtns.forEach((button) => {
+    button.addEventListener("click", () => {
+      const productName = button.dataset.name;
+      const product = cart.find((item) => item.name === productName);
+      if (!product) return;
+      if (product.quantity < 10) {
+        product.quantity++;
 
-const detailPage = document.querySelector(".product-body:not(#product_body)");
-if (detailPage) {
-  const product =
-    images[Number(new URLSearchParams(location.search).get("product"))] ||
-    images[0];
-  detailPage.querySelector(".product-img").src = `./${product.src}`;
-  detailPage.querySelector(".product-img").alt = product.name;
-  detailPage.querySelector(".product-name").textContent = product.name;
-  detailPage.querySelector(".product-price").textContent = `${product.price}kr`;
-  detailPage.querySelector(".add-to-cart").dataset.name = product.name;
-  detailPage.querySelector(".add-to-cart").dataset.price = product.price;
-  document.title = product.name;
+        localStorage.setItem("cart", JSON.stringify(cart));
+        renderCart();
+        updateCartTotals();
+        updateCartCount();
+        setQtyBtns();
+      }
+    });
+  });
+  decreaseBtns.forEach((button) => {
+    button.addEventListener("click", () => {
+      const productName = button.dataset.name;
+      const product = cart.find((item) => item.name === productName);
+      if (!product) return;
+      if (product.quantity > 1) {
+        product.quantity--;
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+      } else {
+        const productIndex = cart.findIndex(
+          (item) => item.name === productName,
+        );
+        cart.splice(productIndex, 1);
+      }
+      renderCart();
+      setQtyBtns();
+      updateCartTotals();
+      updateCartCount();
+    });
+  });
 }
