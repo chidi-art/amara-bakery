@@ -8,7 +8,7 @@
       rel="stylesheet"
     />
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="./css/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Details</title>
   </head>
@@ -18,15 +18,22 @@
         <li><a href="Home.html" class="active">Home</a></li>
         <li><a href="Menu.html">Menu</a></li>
         <li><a href="#">Contact</a></li>
-        <li><a href="#" class="cart-link">Cart</a></li>
+        <li><a href="Cart.html" class="cart-link">Cart</a></li>
       </ul>
       <div class="nav-user">
         <div class="user-icon" aria-label="User account"></div>
       </div>
     </nav>
     <div class="product-body">
+      <a class="product-exit" href="Menu.html" aria-label="Return to menu"
+        >&times;</a
+      >
       <div class="product-image">
-        <img class="product-img" src="../Images/products/IMG_0979.JPG" />
+        <img
+          class="product-img"
+          src="./Images/products/IMG_0979.JPG"
+          alt="Chocolate fudge bread"
+        />
       </div>
       <div class="product-txt-container">
         <div class="product-txt-info">
@@ -39,7 +46,7 @@
         <div class="product-btns">
           <div class="product-qty">
             <button class="qty-btn minus-btn">−</button>
-            <input type="number" value="0" min="0" max="10" />
+            <input type="number" value="1" min="1" max="10" readonly />
             <button class="qty-btn plus-btn">+</button>
           </div>
           <a class="add-to-cart" href="#"> Add to Cart</a>
