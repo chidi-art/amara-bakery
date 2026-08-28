@@ -1,0 +1,7 @@
+const Review = require('../models/Review');
+const Product = require('../models/Product');
+const list = async (req, res) => res.json({ success: true, reviews: await Review.find({ product: req.params.productId }).populate('user', 'firstName lastName').sort({ createdAt: -1 }) });
+const create = async (req, res) => { if (!await Product.exists({ _id: req.params.productId })) return res.status(404).json({ success: false, message: 'Product not found' }); res.status(201).json({ success: true, review: await Review.create({ ...req.body, product: req.params.productId, user: req.user._id }) }); };
+const update = async (req, res) => { const filter = req.user.role === 'admin' ? { _id: req.params.id } : { _id: req.params.id, user: req.user._id }; const review = await Review.findOneAndUpdate(filter, req.body, { new: true, runValidators: true }); if (!review) return res.status(404).json({ success: false, message: 'Review not found' }); res.json({ success: true, review }); };
+const remove = async (req, res) => { const filter = req.user.role === 'admin' ? { _id: req.params.id } : { _id: req.params.id, user: req.user._id }; const review = await Review.findOneAndDelete(filter); if (!review) return res.status(404).json({ success: false, message: 'Review not found' }); res.json({ success: true, message: 'Review deleted' }); };
+module.exports = { list, create, update, remove };

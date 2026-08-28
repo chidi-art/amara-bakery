@@ -1,464 +1,135 @@
-const userButton = document.getElementById("user-button");
-const userDropdown = document.querySelector(".user-dropdown");
-const cart = JSON.parse(localStorage.getItem("cart")) || [];
+const API_BASE = window.API_BASE || "http://localhost:5000/api";
+const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 const cartBox = document.querySelector(".product-box");
 const taxBox = document.getElementById("tax");
 const totalBox = document.getElementById("total");
 const subTotalBox = document.getElementById("subtotal");
 const cartLink = document.querySelector(".cart-link");
-const track = document.getElementById("imageTrack");
 const menuOptions = document.getElementById("menu_container");
-const breadbtn = document.getElementById("breadbtn");
-const cookiebtn = document.getElementById("cookiebtn");
+const track = document.getElementById("imageTrack");
+const userButton = document.getElementById("user-button");
+const userDropdown = document.querySelector(".user-dropdown");
+let products = [];
 
-function plus_1() {
-  let num_input = document.querySelector(".numinput");
-  let currentValue = parseInt(num_input.value) || 0;
+const fetchJson = async (path, options) => {
+  const response = await fetch(`${API_BASE}${path}`, options);
+  const body = await response.json();
+  if (!response.ok) throw new Error(body.message || "Request failed");
+  return body;
+};
+const productImage = (product) => product.image || "Images/products/IMG_0979.JPG";
+const money = (value) => `${Number(value).toFixed(2).replace(/\.00$/, "")} kr`;
 
-  if (currentValue < 10) {
-    currentValue += 1;
-    num_input.value = currentValue;
+function productCard(product) {
+  return `<div class="menu-box"><div class="menu-box-div" data-product-id="${product._id}" onclick="if (!event.target.closest('.menu-add-to-cart')) location.href='Product details.html?product=${product._id}'"><div class="menu-box-img"><img src="./${productImage(product)}" alt="${product.name}"></div><div class="menu-box-txt"><span class="menu-box-name">${product.name}</span><span class="menu-box-price">${money(product.price)}</span></div><button class="menu-add-to-cart" type="button" data-product-id="${product._id}">Add to Cart</button></div></div>`;
+}
+function renderProducts(list, container = menuOptions) {
+  if (container) container.innerHTML = list.map(productCard).join("") || "<p>No products available.</p>";
+}
+function setMenuHeader(button) {
+  const header = document.querySelector(".menu-header");
+  if (header && button) header.textContent = button.textContent.trim();
+}
+function MenuOptions(button) {
+  setMenuHeader(button);
+  renderProducts(products);
+}
+function Category(button) {
+  setMenuHeader(button);
+  const category = button.dataset.category;
+  renderProducts(products.filter((product) => product.category?.name?.toLowerCase() === category));
+}
+window.MenuOptions = MenuOptions;
+window.Category = Category;
+
+async function loadProducts() {
+  try {
+    const result = await fetchJson("/products?limit=100");
+    products = result.products;
+    if (menuOptions) renderProducts(products);
+    document.querySelectorAll(".home-menu-list").forEach((section) => {
+      const category = section.id.replace("-menu-home", "").replace("-", "");
+      const container = section.querySelector(".menu-container");
+      if (container) renderProducts(products.filter((product) => product.category?.name === category).slice(0, 4), container);
+    });
+    await initializeProductDetails();
+  } catch (error) {
+    if (menuOptions) menuOptions.innerHTML = `<p role="alert">${error.message}. Start the backend and run the seed command.</p>`;
   }
 }
-
-function minus_1() {
-  let num_input = document.querySelector(".numinput");
-  let currentValue = parseInt(num_input.value) || 0;
-
-  if (currentValue > 0) {
-    currentValue -= 1;
-    num_input.value = currentValue;
-  }
+async function initializeProductDetails() {
+  const details = document.querySelector(".product-body");
+  const productId = new URLSearchParams(location.search).get("product");
+  if (!details || !productId) return;
+  try {
+    const { product } = await fetchJson(`/products/${productId}`);
+    details.querySelector(".product-img").src = `./${productImage(product)}`;
+    details.querySelector(".product-img").alt = product.name;
+    details.querySelector(".product-name").textContent = product.name;
+    details.querySelector(".product-desc").textContent = product.description || "Freshly baked to order.";
+    details.querySelector(".product-price").textContent = money(product.price);
+    details.querySelector(".add-to-cart").dataset.productId = product._id;
+    details.querySelector(".product-qty input").value = cart.find((item) => item.product === product._id)?.quantity || 0;
+    document.title = product.name;
+  } catch (error) { details.querySelector(".product-name").textContent = error.message; }
 }
 
-const images = [
-  {
-    src: "Images/products/IMG_0905.JPG",
-    name: "Biscoff Stuffed Cookies",
-    loadedname: "Biscoff Stuffed Cookies",
-    tag: "cookie",
-    price: 12,
-  },
-  {
-    src: "Images/products/IMG_0908.JPG",
-    name: "Oreo Cream Cheese Loaf",
-    loadedname: "Oreo Cream Cheese Loaf",
-    tag: "bread",
-    price: 12,
-  },
-  {
-    src: "Images/products/IMG_0934.JPG",
-    name: "Coconut Topped Loaf",
-    loadedname: "Coconut Topped Loaf",
-    tag: "bread",
-    price: 12,
-  },
-  {
-    src: "Images/products/IMG_0939.JPG",
-    name: "Classic Chocolate Chunk Cookies",
-    loadedname: "Classic Chocolate Chunk Cookies",
-    tag: "cookie",
-    price: 12,
-  },
-  {
-    src: "Images/products/IMG_0940.JPG",
-    name: "Marshmallow & Chocolate Chunk Cookies",
-    loadedname: "Marshmallow & Chocolate Chunk Cookies",
-    tag: "cookie",
-    price: 12,
-  },
-  {
-    src: "Images/products/IMG_0942.JPG",
-    name: "M&M Cookies",
-    loadedname: `<span style="color: transparent;">~~</span>M&M <span style="color: transparent;">~~</span>Cookies`,
-    tag: "cookie",
-    price: 12,
-  },
-  {
-    src: "Images/products/IMG_0943.JPG",
-    name: "Oreo Chunk Cookies",
-    loadedname: "Oreo Chunk Cookies",
-    tag: "cookie",
-    price: 12,
-  },
-  {
-    src: "Images/products/IMG_0946.JPG",
-    name: "Variety Cookie Spread",
-    loadedname: "Variety Cookie Spread",
-    tag: "cookie",
-    price: 12,
-  },
-  {
-    src: "Images/products/IMG_0947.JPG",
-    name: "Oreo Crumb Cookies",
-    loadedname: "Oreo Crumb Cookies",
-    tag: "cookie",
-    price: 12,
-  },
-  {
-    src: "Images/products/IMG_0948.JPG",
-    name: "White Chocolate Chunk Cookies",
-    loadedname: "White Chocolate Chunk Cookies",
-    tag: "cookie",
-    price: 12,
-  },
-  {
-    src: "Images/products/IMG_0952.JPG",
-    name: "Pistachio & Chocolate Cookies",
-    loadedname: "Pistachio & Chocolate Cookies",
-    tag: "cookie",
-    price: 12,
-  },
-  {
-    src: "Images/products/IMG_0953.JPG",
-    name: "Double Chocolate Marshmallow Cookies",
-    loadedname: "Double Chocolate Marshmallow Cookies",
-    tag: "cookie",
-    price: 12,
-  },
-  {
-    src: "Images/products/IMG_0958.JPG",
-    name: "White Chocolate & Jam Cookies",
-    loadedname: "White Chocolate & Jam Cookies",
-    tag: "cookie",
-    price: 12,
-  },
-];
-
-let clicked = [false, false];
-
-setInterval(() => {
-  carousel_right();
-}, 10000);
-
-function MenuOptions() {
-  if (!menuOptions) return;
-  menuOptions.innerHTML = "";
-
-  images.forEach((e, index) => {
-    menuOptions.innerHTML += `
-      <div class="menu-box" >
-        <div class="menu-box-div" onclick="if (!event.target.closest('.menu-add-to-cart')) location.href='Product details.html?product=${index}'" data-index="${index}">
-          <div class="menu-box-img">
-            <img src="./${e.src}" />
-          </div>
-          <div class="menu-box-txt">
-            <span class="menu-box-name">${e.name}</span>
-            <span class="menu-box-price">12kr</span>
-          </div>
-          <button class="menu-add-to-cart" type="button" data-index="${index}" data-name="${e.name}" data-price="${e.price}">Add to Cart</button>
-        </div>
-      </div>`;
-  });
-}
-
-function Category(btn) {
-  if (!menuOptions) return;
-  const category = btn.dataset.category;
-  menuOptions.innerHTML = "";
-  images.forEach((e, index) => {
-    if (e.tag == category) {
-      menuOptions.innerHTML += `
-      <div class="menu-box" >
-        <div class="menu-box-div" onclick="if (!event.target.closest('.menu-add-to-cart')) location.href='Product details.html?product=${index}'" data-index="${index}">
-          <div class="menu-box-img">
-            <img src="./${e.src}" />
-          </div>
-          <div class="menu-box-txt">
-            <span class="menu-box-name">${e.name}</span>
-            <span class="menu-box-price">12kr</span>
-          </div>
-          <button class="menu-add-to-cart" type="button" data-index="${index}" data-name="${e.name}" data-price="${e.price}">Add to Cart</button>
-        </div>
-      </div>`;
-    }
-  });
-}
-
-MenuOptions();
-initializeProductDetails();
-
-carosel_images = [
-  "first__.jpeg",
-  "download0.jpeg",
-  "download1.jpeg",
-  "download2.jpeg",
-  "download3.jpeg",
-  "download4.jpeg",
-  "download5.jpeg",
-  "download6.jpeg",
-  "download7.jpeg",
-  "download8.jpeg",
-  "download9.jpeg",
-  "download10.jpeg",
-];
-
-carosel_imagesLength = carosel_images.length;
-let index = carosel_imagesLength;
-
-function Carousel2() {
-  if (!track) return;
-  if (index == 0) {
-    index = carosel_imagesLength;
-  }
-  track.innerHTML = "";
-
-  track.innerHTML += `<img src="Images/carosel_images/${carosel_images[index % carosel_imagesLength]}" class = "img1">`;
-}
-
-function carousel_left() {
-  index -= 1;
-  Carousel2();
-}
-function carousel_right() {
-  index += 1;
-  Carousel2();
-}
+let carouselIndex = 0;
+const carouselImages = ["first__.jpeg", "download0.jpeg", "download1.jpeg", "download2.jpeg", "download3.jpeg", "download4.jpeg", "download5.jpeg", "download6.jpeg", "download7.jpeg", "download8.jpeg", "download9.jpeg", "download10.jpeg"];
+function Carousel2() { if (track) track.innerHTML = `<img src="Images/carosel_images/${carouselImages[carouselIndex]}" class="img1" alt="Bakery selection">`; }
+function carousel_left() { carouselIndex = (carouselIndex + carouselImages.length - 1) % carouselImages.length; Carousel2(); }
+function carousel_right() { carouselIndex = (carouselIndex + 1) % carouselImages.length; Carousel2(); }
+window.carousel_left = carousel_left;
+window.carousel_right = carousel_right;
 Carousel2();
+setInterval(carousel_right, 10000);
 
-const checkoutTotalBox = document.getElementById("checkout-total");
-
-updateCartCount();
-if (userButton && userDropdown) {
-  userButton.addEventListener("click", () => {
-    userDropdown.classList.toggle("show");
-  });
+function saveCart() { localStorage.setItem("cart", JSON.stringify(cart)); updateCartCount(); }
+function updateCartCount() {
+  const count = cart.reduce((total, item) => total + item.quantity, 0);
+  if (cartLink) cartLink.textContent = `Cart (${count})`;
+  const checkoutLink = document.querySelector('.checkout-btn[href="checkout.html"]');
+  if (checkoutLink) checkoutLink.classList.toggle("disabled", count === 0);
+}
+function addToCart(button) {
+  const product = products.find((item) => item._id === button.dataset.productId);
+  if (!product) return;
+  const quantity = Math.max(1, Math.min(10, Number(button.closest(".product-body")?.querySelector("input")?.value) || 1));
+  const existing = cart.find((item) => item.product === product._id);
+  if (existing) existing.quantity = Math.min(10, existing.quantity + quantity);
+  else cart.push({ product: product._id, name: product.name, price: product.price, image: productImage(product), quantity });
+  saveCart();
+  button.textContent = "Added";
+  setTimeout(() => { button.textContent = "Add to Cart"; }, 1000);
+}
+function updateCartTotals() {
+  if (!subTotalBox) return;
+  const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  subTotalBox.textContent = money(subtotal);
+  taxBox.textContent = money(subtotal * 0.75);
+  totalBox.textContent = money(subtotal * 1.75);
+}
+function renderCart() {
+  if (!cartBox) return;
+  cartBox.innerHTML = cart.map((item) => `<div class="cart-box-container"><div class="cart-box-product"><img src="./${item.image}" alt="${item.name}"><p>${item.name}</p></div><div class="cart-btns"><div class="cart-price">${money(item.price * item.quantity)}</div><div class="cart-qty"><button class="qty-btn minus-btn" data-product-id="${item.product}">-</button><input class="numinput" type="number" value="${item.quantity}" readonly><button class="qty-btn plus-btn" data-product-id="${item.product}">+</button></div></div></div>`).join("") || "<p>Your cart is empty.</p>";
 }
 
 document.addEventListener("click", (event) => {
-  const checkoutLink = event.target.closest(
-    '.checkout-btn[href="checkout.html"]',
-  );
-  if (checkoutLink?.classList.contains("disabled")) {
-    event.preventDefault();
-    return;
-  }
   const addButton = event.target.closest(".menu-add-to-cart, .add-to-cart");
-  if (addButton) {
-    event.preventDefault();
-    addToCart(addButton);
+  if (addButton) { event.preventDefault(); addToCart(addButton); return; }
+  const quantityButton = event.target.closest(".cart-qty .qty-btn, .product-qty .qty-btn");
+  if (quantityButton) {
+    const item = cart.find((entry) => entry.product === quantityButton.dataset.productId);
+    if (!item) return;
+    item.quantity += quantityButton.classList.contains("plus-btn") ? 1 : -1;
+    if (item.quantity < 1) cart.splice(cart.indexOf(item), 1);
+    else item.quantity = Math.min(item.quantity, 10);
+    saveCart(); renderCart(); updateCartTotals();
   }
-  const productQuantityButton = event.target.closest(".product-qty .qty-btn");
-  if (productQuantityButton) {
-    const input = productQuantityButton.parentElement.querySelector("input");
-    const change = productQuantityButton.classList.contains("plus-btn")
-      ? 1
-      : -1;
-    const details = productQuantityButton.closest(".product-body");
-    const name = details?.querySelector(".product-name")?.textContent.trim();
-    const product = cart.find((item) => item.name === name);
-    const quantity = Math.max(
-      0,
-      Math.min(10, (product?.quantity || 0) + change),
-    );
-    if (product && quantity > 0) product.quantity = quantity;
-    else if (product) cart.splice(cart.indexOf(product), 1);
-    else if (quantity > 0) {
-      const price = Number(
-        details
-          .querySelector(".product-price")
-          .textContent.replace(/[^\d.]/g, ""),
-      );
-      const image = details.querySelector(".product-img").getAttribute("src");
-      cart.push({ name, price, quantity, image });
-    }
-    input.value = quantity;
-    localStorage.setItem("cart", JSON.stringify(cart));
-    updateCartCount();
-    updateCartTotals();
-  }
-  if (
-    userButton &&
-    userDropdown &&
-    !userButton.contains(event.target) &&
-    !userDropdown.contains(event.target)
-  ) {
-    userDropdown.classList.remove("show");
-  }
+  if (userButton && userDropdown && !userButton.contains(event.target) && !userDropdown.contains(event.target)) userDropdown.classList.remove("show");
 });
-
-function addToCart(button) {
-  const box = button.closest(".menu-box");
-  const details = button.closest(".product-body");
-  const name =
-    button.dataset.name ||
-    box?.querySelector(".menu-box-name")?.textContent.trim() ||
-    details?.querySelector(".product-name")?.textContent.trim();
-  const price = Number(
-    button.dataset.price ||
-      box
-        ?.querySelector(".menu-box-price")
-        ?.textContent.replace(/[^\d.]/g, "") ||
-      details
-        ?.querySelector(".product-price")
-        ?.textContent.replace(/[^\d.]/g, "") ||
-      0,
-  );
-  const quantity = Math.max(
-    1,
-    Math.min(
-      10,
-      Number(details?.querySelector(".product-qty input")?.value) || 1,
-    ),
-  );
-  const image =
-    box?.querySelector("img")?.getAttribute("src") ||
-    details?.querySelector(".product-img")?.getAttribute("src") ||
-    "Images/products/IMG_0979.JPG";
-  if (!name || !price) return;
-  const product = cart.find((item) => item.name === name);
-  if (product) {
-    product.quantity = Math.min(10, product.quantity + 1);
-    product.image ||= image;
-  } else cart.push({ name, price, quantity, image });
-  const savedProduct = cart.find((item) => item.name === name);
-  const quantityInput = details?.querySelector(".product-qty input");
-  if (quantityInput) quantityInput.value = savedProduct.quantity;
-  localStorage.setItem("cart", JSON.stringify(cart));
-  updateCartCount();
-  button.textContent = "Added";
-  setTimeout(() => (button.textContent = "Add to Cart"), 1000);
-}
-
-function initializeProductDetails() {
-  const details = document.querySelector(".product-body");
-  if (!details || details.id === "product_body") return;
-  const productIndex = Number(
-    new URLSearchParams(location.search).get("product"),
-  );
-  const product =
-    images[
-      Number.isInteger(productIndex) && productIndex >= 0 ? productIndex : 0
-    ];
-  details.querySelector(".product-img").src = `./${product.src}`;
-  details.querySelector(".product-img").alt = product.name;
-  details.querySelector(".product-name").textContent = product.name;
-  details.querySelector(".product-price").textContent = `${product.price}kr`;
-  const addButton = details.querySelector(".add-to-cart");
-  addButton.dataset.name = product.name;
-  addButton.dataset.price = product.price;
-  const cartProduct = cart.find((item) => item.name === product.name);
-  details.querySelector(".product-qty input").value = cartProduct?.quantity ?? 0;
-  document.title = product.name;
-}
-
-if (cartBox) {
-  renderCart();
-  updateCartTotals();
-  setQtyBtns();
-}
-
-function updateCartCount() {
-  const cartCount = cart.reduce((total, product) => {
-    return total + product.quantity;
-  }, 0);
-
-  if (cartLink) cartLink.textContent = `Cart (${cartCount})`;
-  const checkoutLink = document.querySelector(
-    '.checkout-btn[href="checkout.html"]',
-  );
-  if (checkoutLink) {
-    checkoutLink.classList.toggle("disabled", cartCount === 0);
-    checkoutLink.setAttribute("aria-disabled", cartCount === 0);
-    checkoutLink.tabIndex = cartCount === 0 ? -1 : 0;
-  }
-}
-
-function getProductImage(product) {
-  return (
-    product.image ||
-    images.find((item) => item.name === product.name)?.src ||
-    "Images/products/IMG_0979.JPG"
-  );
-}
-
-function updateCartTotals() {
-  if (!subTotalBox || !taxBox || !totalBox) return;
-  let subTotal = 0;
-  const taxRate = 0.75;
-  cart.forEach((product) => {
-    subTotal += product.price * product.quantity;
-    console.log(product);
-  });
-
-  let tax = taxRate * subTotal;
-  let total = subTotal + tax;
-  subTotalBox.textContent = `${subTotal} kr`;
-  taxBox.textContent = `${tax} kr`;
-  totalBox.textContent = `${total} kr`;
-  console.log(subTotal);
-}
-
-function renderCart() {
-  if (!cartBox) return;
-  cartBox.innerHTML = "";
-  localStorage.setItem("cart", JSON.stringify(cart));
-  cart.forEach((product) => {
-    cartBox.innerHTML += `
-<div class="cart-box-container">
-    <div class="cart-box-product">
-  <img src="./${getProductImage(product)}" alt="${product.name}" />
-    <p>${product.name}</p>
-    </div>
-    <div class="cart-btns">
-    <div class="cart-price">${product.price * product.quantity} kr</div>
-    <div class="cart-qty">
-                  <button class="qty-btn minus-btn" data-name="${product.name}">−</button>
-                  <input
-                  data-name="${product.name}"
-                    class="numinput"
-                    type="number"
-                    value="${product.quantity}"
-                    min="1"
-                    max="10"
-                    readonly
-                  />
-                  <button class="qty-btn plus-btn" data-name="${product.name}">+</button>
-    </div>
-                </div>
-                </div>`;
-  });
-}
-
-function setQtyBtns() {
-  const increaseBtns = document.querySelectorAll(".qty-btn.plus-btn");
-  const decreaseBtns = document.querySelectorAll(".qty-btn.minus-btn");
-
-  increaseBtns.forEach((button) => {
-    button.addEventListener("click", () => {
-      const productName = button.dataset.name;
-      const product = cart.find((item) => item.name === productName);
-      if (!product) return;
-      if (product.quantity < 10) {
-        product.quantity++;
-
-        localStorage.setItem("cart", JSON.stringify(cart));
-        renderCart();
-        updateCartTotals();
-        updateCartCount();
-        setQtyBtns();
-      }
-    });
-  });
-  decreaseBtns.forEach((button) => {
-    button.addEventListener("click", () => {
-      const productName = button.dataset.name;
-      const product = cart.find((item) => item.name === productName);
-      if (!product) return;
-      if (product.quantity > 1) {
-        product.quantity--;
-
-        localStorage.setItem("cart", JSON.stringify(cart));
-      } else {
-        const productIndex = cart.findIndex(
-          (item) => item.name === productName,
-        );
-        cart.splice(productIndex, 1);
-      }
-      renderCart();
-      setQtyBtns();
-      updateCartTotals();
-      updateCartCount();
-    });
-  });
-}
+if (userButton && userDropdown) userButton.addEventListener("click", () => userDropdown.classList.toggle("show"));
+updateCartCount();
+renderCart();
+updateCartTotals();
+loadProducts();

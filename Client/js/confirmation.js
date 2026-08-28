@@ -1,5 +1,4 @@
-const orders = JSON.parse(localStorage.getItem("orders")) || [];
-const order = orders[orders.length - 1];
+const order = JSON.parse(localStorage.getItem("lastOrder") || "null");
 const confirmationTitle = document.getElementById("confirmation-title");
 const confirmationIntro = document.querySelector(".confirmation-intro");
 const confirmationDetails = document.querySelector(".confirmation-details");
@@ -27,12 +26,12 @@ if (!order) {
     .join(", ");
 
   document.getElementById("confirmation-order-number").textContent =
-    order.orderId || "-";
+    order._id || order.orderId || "-";
   document.getElementById("confirmation-customer-name").textContent =
     customer.name || "-";
   document.getElementById("confirmation-items").textContent = items || "-";
   document.getElementById("confirmation-total").textContent =
-    `${order.total || 0} kr`;
+    `${order.totalAmount || order.total || 0} kr`;
   document.getElementById("confirmation-address").textContent = address || "-";
   document.getElementById("confirmation-phone").textContent =
     customer.phone || "-";
