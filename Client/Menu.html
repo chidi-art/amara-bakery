@@ -15,8 +15,8 @@
   <body>
     <nav class="navbar">
       <ul class="navlinks">
-        <li><a href="Home.html" class="active">Home</a></li>
-        <li><a href="Menu.html">Menu</a></li>
+        <li><a href="Home.html">Home</a></li>
+        <li><a href="Menu.html" class="active">Menu</a></li>
         <li><a href="#">Contact</a></li>
         <li><a href="Cart.html" class="cart-link">Cart</a></li>
       </ul>
@@ -40,241 +40,51 @@
         </div>
       </div>
     </nav>
+
     <div class="menu-hero">
-      <img class="hero-img" src="./Images/hero.jpg" alt="bread" />
+      <div class="carousel-container">
+        <div class="carousel-container-btngroup">
+          <button onclick="carousel_left()">&lang;</button>
+          <button onclick="carousel_right()">&rang;</button>
+        </div>
+
+        <div class="carousel-track" id="imageTrack"></div>
+      </div>
       <h2 class="hero-txt">Heavenly pastries for your tastebuds</h2>
     </div>
+
     <div class="category">
       <ul class="category-links">
-        <li><a href="#" class="active">Cookies</a></li>
-        <li><a href="#"> Bread</a></li>
-        <li><a href="#">Specials</a></li>
+        <li>
+          <button onclick="MenuOptions(this)" id="allbtn">
+            All Products
+          </button>
+        </li>
+        <li>
+          <button onclick="Category(this)" id="cookiebtn" data-category="cookie">
+            Cookies
+          </button>
+        </li>
+        <li>
+          <button onclick="Category(this)" id="breadbtn" data-category="bread">
+            Breads
+          </button>
+        </li>
+        <li>
+          <button onclick="MenuOptions(this)" id="specialbtn">Special</button>
+        </li>
       </ul>
     </div>
+
     <div class="site-body">
       <div class="menu">
         <div class="menu-list" id="bread-menu-home">
-          <h2 class="menu-header">Breads</h2>
-          <div class="menu-container">
-            <div class="menu-box">
-              <a href="Product details.html">
-                <div class="menu-box-img">
-                  <img src="./Images/products/IMG_0979.JPG" />
-                </div>
-                <div class="menu-box-txt">
-                  <span class="menu-box-name">Choc bread</span>
-
-                  <span class="menu-box-price">12kr</span>
-                </div>
-              </a>
-              <button
-                class="menu-add-to-cart"
-                data-price="12"
-                data-name="Choc bread"
-              >
-                Add to Cart
-              </button>
-            </div>
-            <div class="menu-box">
-              <a href="Product details.html">
-                <div class="menu-box-img">
-                  <img src="./Images/products/IMG_0979.JPG" />
-                </div>
-                <div class="menu-box-txt">
-                  <span class="menu-box-name" data-name="Choc bread"
-                    >Choc bread</span
-                  >
-
-                  <span class="menu-box-price" data-price="12">12kr</span>
-                </div>
-                <button class="menu-add-to-cart">Add to Cart</button>
-              </a>
-            </div>
-            <div class="menu-box">
-              <a href="Product details.html">
-                <div class="menu-box-img">
-                  <img src="./Images/products/IMG_0979.JPG" />
-                </div>
-                <div class="menu-box-txt">
-                  <span class="menu-box-name" data-name="Choc bread"
-                    >Choc bread</span
-                  >
-
-                  <span class="menu-box-price" data-price="12">12kr</span>
-                </div>
-                <button class="menu-add-to-cart">Add to Cart</button>
-              </a>
-            </div>
-            <div class="menu-box">
-              <a href="Product details.html">
-                <div class="menu-box-img">
-                  <img src="./Images/products/IMG_0979.JPG" />
-                </div>
-                <div class="menu-box-txt">
-                  <span class="menu-box-name" data-name="Choc bread"
-                    >Choc bread</span
-                  >
-
-                  <span class="menu-box-price" data-price="12">12kr</span>
-                </div>
-                <button class="menu-add-to-cart">Add to Cart</button>
-              </a>
-            </div>
-            <div class="menu-box">
-              <a href="Product details.html">
-                <div class="menu-box-img">
-                  <img src="./Images/products/IMG_0979.JPG" />
-                </div>
-                <div class="menu-box-txt">
-                  <span class="menu-box-name" data-name="Choc bread"
-                    >Choc bread</span
-                  >
-
-                  <span class="menu-box-price" data-price="12">12kr</span>
-                </div>
-                <button class="menu-add-to-cart">Add to Cart</button>
-              </a>
-            </div>
-            <div class="menu-box">
-              <a href="Product details.html">
-                <div class="menu-box-img">
-                  <img src="./Images/products/IMG_0979.JPG" />
-                </div>
-                <div class="menu-box-txt">
-                  <span class="menu-box-name" data-name="Choc bread"
-                    >Choc bread</span
-                  >
-
-                  <span class="menu-box-price" data-price="12">12kr</span>
-                </div>
-                <button class="menu-add-to-cart">Add to Cart</button>
-              </a>
-            </div>
-            <div class="menu-box">
-              <a href="Product details.html">
-                <div class="menu-box-img">
-                  <img src="./Images/products/IMG_0979.JPG" />
-                </div>
-                <div class="menu-box-txt">
-                  <span class="menu-box-name" data-name="Choc bread"
-                    >Choc bread</span
-                  >
-
-                  <span class="menu-box-price" data-price="12">12kr</span>
-                </div>
-                <button class="menu-add-to-cart">Add to Cart</button>
-              </a>
-            </div>
-            <div class="menu-box">
-              <a href="Product details.html">
-                <div class="menu-box-img">
-                  <img src="./Images/products/IMG_0979.JPG" />
-                </div>
-                <div class="menu-box-txt">
-                  <span class="menu-box-name" data-name="Choc bread"
-                    >Choc bread</span
-                  >
-
-                  <span class="menu-box-price" data-price="12">12kr</span>
-                </div>
-                <button class="menu-add-to-cart">Add to Cart</button>
-              </a>
-            </div>
-            <div class="menu-box">
-              <a href="Product details.html">
-                <div class="menu-box-img">
-                  <img src="./Images/products/IMG_0979.JPG" />
-                </div>
-                <div class="menu-box-txt">
-                  <span class="menu-box-name" data-name="Choc bread"
-                    >Choc bread</span
-                  >
-
-                  <span class="menu-box-price" data-price="12">12kr</span>
-                </div>
-                <button class="menu-add-to-cart">Add to Cart</button>
-              </a>
-            </div>
-            <div class="menu-box">
-              <a href="Product details.html">
-                <div class="menu-box-img">
-                  <img src="./Images/products/IMG_0979.JPG" />
-                </div>
-                <div class="menu-box-txt">
-                  <span class="menu-box-name" data-name="Choc bread"
-                    >Choc bread</span
-                  >
-
-                  <span class="menu-box-price" data-price="12">12kr</span>
-                </div>
-                <button class="menu-add-to-cart">Add to Cart</button>
-              </a>
-            </div>
-            <div class="menu-box">
-              <a href="Product details.html">
-                <div class="menu-box-img">
-                  <img src="./Images/products/IMG_0979.JPG" />
-                </div>
-                <div class="menu-box-txt">
-                  <span class="menu-box-name" data-name="Choc bread"
-                    >Choc bread</span
-                  >
-
-                  <span class="menu-box-price" data-price="12">12kr</span>
-                </div>
-                <button class="menu-add-to-cart">Add to Cart</button>
-              </a>
-            </div>
-            <div class="menu-box">
-              <a href="Product details.html">
-                <div class="menu-box-img">
-                  <img src="./Images/products/IMG_0979.JPG" />
-                </div>
-                <div class="menu-box-txt">
-                  <span class="menu-box-name" data-name="Choc bread"
-                    >Choc bread</span
-                  >
-
-                  <span class="menu-box-price" data-price="12">12kr</span>
-                </div>
-                <button class="menu-add-to-cart">Add to Cart</button>
-              </a>
-            </div>
-            <div class="menu-box">
-              <a href="Product details.html">
-                <div class="menu-box-img">
-                  <img src="./Images/products/IMG_0979.JPG" />
-                </div>
-                <div class="menu-box-txt">
-                  <span class="menu-box-name" data-name="Choc bread"
-                    >Choc bread</span
-                  >
-
-                  <span class="menu-box-price" data-price="12">12kr</span>
-                </div>
-                <button class="menu-add-to-cart">Add to Cart</button>
-              </a>
-            </div>
-          </div>
+          <h2 class="menu-header">All Products</h2>
+          <div class="menu-container" id="menu_container"></div>
         </div>
-        <!--<div class="home-menu-list" id="cakes-menu-home">
-        <h2 class="menu-header">Cakes</h2>
-        <div class="menu-container">
-          <div class="menu-box"></div>
-          <div class="menu-box"></div>
-          <div class="menu-box"></div>
-        </div>
-      </div>
-      <div class="home-menu-list" id="specials-menu-home">
-        <h2 class="menu-header">Specials</h2>
-        <div class="menu-container">
-          <div class="menu-box"></div>
-          <div class="menu-box"></div>
-          <div class="menu-box"></div>
-        </div>
-      </div>-->
       </div>
     </div>
+
     <footer>
       <div class="footer-container">
         <div class="footer-brand">
@@ -284,21 +94,21 @@
         <div class="footer-links">
           <h3>Quick Links</h3>
           <a href="Home.html">Home</a>
-          <a href="Home.html">Menu</a>
-          <a href="Home.html">Contact</a>
-          <a href="Home.html">Order now</a>
+          <a href="Menu.html">Menu</a>
+          <a href="#">Contact</a>
+          <a href="#">Order now</a>
         </div>
 
         <div class="footer-links">
           <h3>Follow Us</h3>
           <a href="Home.html">Home</a>
-          <a href="Home.html">Menu</a>
-          <a href="Home.html">Contact</a>
-          <a href="Home.html">Order now</a>
+          <a href="Menu.html">Menu</a>
+          <a href="#">Contact</a>
+          <a href="#">Order now</a>
         </div>
 
         <div class="footer-end">
-          <p>&copy: 2026 Amara's Menu. All rights reserved</p>
+          <p>&copy; 2026 Amara's Menu. All rights reserved</p>
         </div>
       </div>
     </footer>
