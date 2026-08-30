@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Bree+Serif&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body class="auth-page">
+    <div class="auth-shell">
+      <div class="auth-visual">
+        <div class="auth-brand">
+          <span>Amara's</span>
+          <strong>Bakery</strong>
+        </div>
+        <p>Bake your day better with fresh favorites and custom treats.</p>
+      </div>
+
+      <main class="auth-card" role="main">
+        <div class="auth-card-content">
+          <h1 class="auth-title">Create Account</h1>
+
+          <form class="auth-form" id="signupForm" novalidate>
+            <div class="auth-field">
+              <label for="signupName" class="sr-only">Name</label>
+              <input
+                type="text"
+                id="signupName"
+                name="name"
+                placeholder="Full Name"
+                autocomplete="name"
+              />
+            </div>
+
+            <div class="auth-field">
+              <label for="signupEmail" class="sr-only">Email</label>
+              <input
+                type="email"
+                id="signupEmail"
+                name="email"
+                placeholder="Email"
+                autocomplete="email"
+              />
+            </div>
+
+            <div class="auth-field">
+              <label for="signupPassword" class="sr-only">Password</label>
+              <input
+                type="password"
+                id="signupPassword"
+                name="password"
+                placeholder="Password"
+                autocomplete="new-password"
+              />
+            </div>
+
+            <button type="submit" class="auth-button">Sign Up</button>
+            <p
+              class="validation-message"
+              id="validationMessage"
+              aria-live="polite"
+            ></p>
+          </form>
+
+          <p class="auth-copy">
+            <span>Already have an account?</span>
+            <a href="login.html" class="auth-link">Sign in</a>
+          </p>
+        </div>
+      </main>
+    </div>
+
+    <script src="./js/login.js"></script>
+  </body>
+</html>

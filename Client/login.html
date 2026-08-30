@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Bree+Serif&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body class="auth-page">
+    <div class="auth-shell">
+      <div class="auth-visual">
+        <div class="auth-brand">
+          <span>Amara's</span>
+          <strong>Bakery</strong>
+        </div>
+        <p>Fresh loaves, sweet treats, and warm service.</p>
+      </div>
+
+      <main class="auth-card" role="main">
+        <div class="auth-card-content">
+          <h1 class="auth-title">Login</h1>
+
+          <form class="auth-form" id="loginForm" novalidate>
+            <div class="auth-field">
+              <label for="email" class="sr-only">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Email"
+                autocomplete="username"
+              />
+            </div>
+
+            <div class="auth-field">
+              <label for="password" class="sr-only">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Password"
+                autocomplete="current-password"
+              />
+            </div>
+
+            <button type="submit" class="auth-button">Login</button>
+            <p
+              class="validation-message"
+              id="validationMessage"
+              aria-live="polite"
+            ></p>
+          </form>
+
+          <p class="auth-copy">
+            <span>Don't have an account?</span>
+            <a href="signup.html" class="auth-link">Create one</a>
+          </p>
+        </div>
+      </main>
+    </div>
+
+    <script src="./js/login.js"></script>
+  </body>
+</html>

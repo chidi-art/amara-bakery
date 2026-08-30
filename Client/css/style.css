@@ -20,6 +20,199 @@ body {
   font-weight: 200;
 }
 
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fffaf4 0%, #f8efe1 100%);
+  padding: 40px 20px;
+}
+
+.auth-shell {
+  width: min(980px, 100%);
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  background: #fff;
+  border: 1px solid #f2d7b4;
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(182, 65, 15, 0.12);
+}
+
+.auth-visual {
+  position: relative;
+  padding: 54px 32px;
+  background: linear-gradient(
+    180deg,
+    rgba(182, 65, 15, 0.94),
+    rgba(248, 143, 34, 0.88)
+  );
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+}
+
+.auth-visual::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("../Images/products/IMG_0979.JPG") center/cover no-repeat;
+  opacity: 0.22;
+}
+
+.auth-brand,
+.auth-visual p {
+  position: relative;
+  z-index: 1;
+}
+
+.auth-brand {
+  display: flex;
+  flex-direction: column;
+  font-family: "Fraunces", serif;
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  line-height: 1;
+}
+
+.auth-brand strong {
+  font-weight: 700;
+}
+
+.auth-visual p {
+  max-width: 300px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.auth-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fffaf4;
+  padding: 42px 28px;
+}
+
+.auth-card-content {
+  width: min(100%, 380px);
+  text-align: center;
+}
+
+.auth-title {
+  margin: 0 0 24px;
+  font-family: "Fraunces", serif;
+  color: #b6410f;
+  font-size: clamp(2.2rem, 4vw, 3rem);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.auth-field {
+  width: 100%;
+}
+
+.auth-field input {
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #f3d59f;
+  background: transparent;
+  padding: 12px 4px;
+  font-size: 1rem;
+  color: #2d1a12;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.auth-field input::placeholder {
+  color: #b6410f;
+  opacity: 0.8;
+}
+
+.auth-field input:focus {
+  border-color: #f88f22;
+  box-shadow: 0 1px 0 0 #f88f22;
+}
+
+.auth-button {
+  width: 100%;
+  min-height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: #b6410f;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.auth-button:hover,
+.auth-button:focus {
+  background: #f88f22;
+  transform: translateY(-1px);
+}
+
+.validation-message {
+  min-height: 20px;
+  margin: 0;
+  font-size: 0.85rem;
+  color: #b6410f;
+  text-align: left;
+}
+
+.auth-copy {
+  margin-top: 18px;
+  font-size: 0.95rem;
+  color: #4d2a1c;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.auth-link {
+  color: #b6410f;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 760px) {
+  .auth-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-visual {
+    min-height: 220px;
+    padding: 36px 24px;
+  }
+
+  .auth-card {
+    padding: 28px 20px 32px;
+  }
+}
+
 .fraunces {
   font-family: "Fraunces", serif;
   font-optical-sizing: auto;
@@ -344,6 +537,156 @@ body {
 
 .button:hover {
   background-color: #f88f22;
+}
+
+.contact-page {
+  max-width: 1100px;
+  margin: 80px auto 100px;
+  padding: 0 24px;
+}
+
+.contact-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.contact-kicker {
+  color: #b6410f;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.contact-header h1 {
+  color: #b6410f;
+  font-size: clamp(3rem, 7vw, 5rem);
+  margin: 0;
+}
+
+.contact-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 20px;
+  margin: 0 auto 40px;
+  max-width: 760px;
+}
+
+.contact-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 90px;
+  padding: 18px 24px;
+  background-color: #ffeac5;
+  border: 1px solid #f3d59f;
+  border-radius: 12px;
+  color: #b6410f;
+  text-decoration: none;
+  font-weight: 700;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.contact-action:hover {
+  background-color: #f8d7a8;
+  transform: translateY(-2px);
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(220px, 0.8fr);
+  gap: 32px;
+  align-items: start;
+}
+
+.contact-form-wrap,
+.contact-info {
+  background-color: #fffaf4;
+  border: 1px solid #f3d59f;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 10px 30px rgba(182, 65, 15, 0.08);
+}
+
+.contact-form-wrap h2,
+.contact-info h3 {
+  color: #b6410f;
+  margin-bottom: 12px;
+}
+
+.contact-form-wrap p,
+.contact-info p,
+.contact-info a {
+  color: #4d2a1c;
+  line-height: 1.7;
+}
+
+.contact-info a {
+  display: inline-block;
+  margin-top: 12px;
+  color: #b6410f;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.contact-form {
+  margin-top: 20px;
+}
+
+.contact-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: #4d2a1c;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border: 1px solid #e8d6c0;
+  border-radius: 10px;
+  background-color: #fff;
+  color: #4d2a1c;
+  font: inherit;
+}
+
+.contact-form textarea {
+  min-height: 130px;
+  resize: vertical;
+}
+
+.contact-form button {
+  background-color: #b6410f;
+  width: 100%;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.contact-form button:hover {
+  background-color: #f88f22;
+}
+
+@media (max-width: 760px) {
+  .contact-actions,
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-form-wrap,
+  .contact-info {
+    padding: 24px 20px;
+  }
 }
 
 #about-me {
@@ -965,7 +1308,7 @@ input[type="number"] {
 
 .checkout-btn {
   width: 100%;
-  padding: 15px;
+  padding: 15px 20px;
   background-color: #b6410f;
   color: white;
   border: none;
@@ -976,6 +1319,7 @@ input[type="number"] {
   transition: background-color 0.3s ease;
   text-align: center;
   text-decoration: none;
+  display: inline-block;
 }
 
 .checkout-btn:hover {

@@ -1,7 +1,66 @@
 const userButton = document.getElementById("user-button");
 const userDropdown = document.querySelector(".user-dropdown");
+const userName = document.getElementById("user-name");
+const userEmail = document.getElementById("user-email");
 const cart = JSON.parse(localStorage.getItem("cart")) || [];
 const cartBox = document.querySelector(".product-box");
+
+if (userButton && userDropdown) {
+  userButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    userDropdown.classList.toggle("show");
+  });
+
+  document.addEventListener("click", (event) => {
+    if (
+      !userButton.contains(event.target) &&
+      !userDropdown.contains(event.target)
+    ) {
+      userDropdown.classList.remove("show");
+    }
+  });
+}
+
+const storedUser = JSON.parse(localStorage.getItem("bakeryUser") || "null");
+
+if (userDropdown) {
+  if (storedUser) {
+    userDropdown.innerHTML = `
+      <div class="user-info">
+        <strong id="user-name">${storedUser.name}</strong>
+        <p id="user-email">${storedUser.email}</p>
+      </div>
+      <hr />
+      <a href="#" class="user-links">Account Settings</a>
+      <a href="#" class="user-links">Orders</a>
+      <a href="#" class="logout">Log Out</a>
+    `;
+
+    const logoutLink = userDropdown.querySelector(".logout");
+    if (logoutLink) {
+      logoutLink.addEventListener("click", (event) => {
+        event.preventDefault();
+        localStorage.removeItem("bakeryUser");
+        window.location.href = "Home.html";
+      });
+    }
+  } else {
+    userDropdown.innerHTML = `
+      <div class="user-info">
+        <strong id="user-name">Guest</strong>
+        <p id="user-email">Log in to continue</p>
+      </div>
+      <hr />
+      <a href="login.html" class="user-links">Log In</a>
+      <a href="signup.html" class="user-links">Create Account</a>
+    `;
+  }
+}
+
+if (userName && userEmail && storedUser) {
+  userName.textContent = storedUser.name;
+  userEmail.textContent = storedUser.email;
+}
 const taxBox = document.getElementById("tax");
 const totalBox = document.getElementById("total");
 const subTotalBox = document.getElementById("subtotal");
@@ -338,7 +397,8 @@ function initializeProductDetails() {
   addButton.dataset.name = product.name;
   addButton.dataset.price = product.price;
   const cartProduct = cart.find((item) => item.name === product.name);
-  details.querySelector(".product-qty input").value = cartProduct?.quantity ?? 0;
+  details.querySelector(".product-qty input").value =
+    cartProduct?.quantity ?? 0;
   document.title = product.name;
 }
 
