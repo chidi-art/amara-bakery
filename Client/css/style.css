@@ -16,7 +16,7 @@ h3 {
 }
 
 body {
-  font-family: "Baloo 2", sans-serif;
+  font-family: "inter", sans-serif;
   font-weight: 200;
 }
 
@@ -228,9 +228,28 @@ body {
   font-style: normal;
 }
 
-.baloo {
-  font-family: "Baloo 2", sans-serif;
+.inter {
+  font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.zilla-slab-regular {
+  font-family: "Zilla Slab", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.zilla-slab-medium {
+  font-family: "Zilla Slab", serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.zilla-slab-bold {
+  font-family: "Zilla Slab", serif;
+  font-weight: 700;
   font-style: normal;
 }
 .navbar,
@@ -247,6 +266,7 @@ body {
   position: relative;
   justify-content: space-between;
   padding: 0 40px;
+  background-color: #ffefe8;
 }
 
 .navlinks,
@@ -268,6 +288,11 @@ body {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  border-radius: 20px;
+  width: 40%;
+  background-color: white;
+  margin-top: 30px;
+  box-shadow: 0px 0px;
 }
 
 .nav-user {
@@ -365,11 +390,28 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 150px 0px;
+  padding: 150px 0px;
+  background-color: #ffefe8;
+  line-height: 0.6;
 }
 
 .hero h1 {
   font-size: 200px;
+  font-family: "zilla-slab-bold";
+  color: #104c64;
+  font-weight: bold;
+}
+
+.hero h2 {
+  font-family: "zilla-slab-bold";
+  color: #f88f22;
+  font-weight: bold;
+  font-size: 100px;
+  z-index: 1000;
+}
+
+#s {
+  color: #f88f22;
 }
 
 #hero-buttons {
@@ -379,8 +421,8 @@ body {
   margin-top: 50px;
 }
 
-#hero-buttons button {
-  background-color: #b6410f;
+#hero-buttons .button {
+  background-color: #f88f22;
   color: white;
   padding: 10px;
   border: none;
@@ -391,6 +433,11 @@ body {
   justify-content: center;
   align-items: center;
   transition: background-color 0.3s ease;
+}
+
+#herobtn2 {
+  background-color: white;
+  color: #f88f22;
 }
 
 #hero-buttons button:hover {
@@ -1012,7 +1059,7 @@ body {
   width: 500px;
   text-align: center;
   z-index: 1000;
-  font-family: "Baloo 2";
+  font-family: "inter";
   font-weight: 900;
   line-height: 1.4;
   background: none;
