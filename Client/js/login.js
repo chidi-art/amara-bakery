@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     validationMessage.textContent = "";
-    validationMessage.style.color = "#b6410f";
+    validationMessage.style.color = "#f88f22";
 
     const inputs = Array.from(form.querySelectorAll("input"));
     const emptyField = inputs.find((input) => !input.value.trim());

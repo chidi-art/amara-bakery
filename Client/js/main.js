@@ -5,6 +5,19 @@ const userEmail = document.getElementById("user-email");
 const cart = JSON.parse(localStorage.getItem("cart")) || [];
 const cartBox = document.querySelector(".product-box");
 
+const revealElements = document.querySelectorAll(".reveal");
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("show");
+    }
+  });
+});
+
+revealElements.forEach((element) => {
+  observer.observe(element);
+});
+
 if (userButton && userDropdown) {
   userButton.addEventListener("click", (event) => {
     event.stopPropagation();
@@ -278,11 +291,6 @@ Carousel2();
 const checkoutTotalBox = document.getElementById("checkout-total");
 
 updateCartCount();
-if (userButton && userDropdown) {
-  userButton.addEventListener("click", () => {
-    userDropdown.classList.toggle("show");
-  });
-}
 
 document.addEventListener("click", (event) => {
   const checkoutLink = event.target.closest(
