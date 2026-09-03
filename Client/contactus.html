@@ -9,15 +9,15 @@
     />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Menu</title>
+    <title>Contact Us</title>
     <link rel="stylesheet" href="./css/style.css" />
   </head>
-  <body class="menu-page">
-    <nav class="navbar menu-navbar">
+  <body class="contact-page-body">
+    <nav class="navbar">
       <ul class="navlinks">
         <li><a href="Home.html">Home</a></li>
-        <li><a href="Menu.html" class="active">Menu</a></li>
-        <li><a href="contactus.html">Contact</a></li>
+        <li><a href="Menu.html">Menu</a></li>
+        <li><a href="contactus.html" class="active">Contact</a></li>
         <li><a href="Cart.html" class="cart-link">Cart</a></li>
       </ul>
 
@@ -41,50 +41,63 @@
       </div>
     </nav>
 
-    <div class="menu-hero">
-      <div class="carousel-container">
-        <div class="carousel-container-btngroup">
-          <button onclick="carousel_left()">&lang;</button>
-          <button onclick="carousel_right()">&rang;</button>
+    <main class="contact-page">
+      <div id="color">
+        <div class="contact-header">
+          <h1>Contact Us</h1>
         </div>
 
-        <div class="carousel-track" id="imageTrack"></div>
-      </div>
-    </div>
-
-    <div class="category">
-      <ul class="category-links">
-        <li>
-          <button onclick="MenuOptions(this)" id="allbtn">All Products</button>
-        </li>
-        <li>
-          <button
-            onclick="Category(this)"
-            id="cookiebtn"
-            data-category="cookie"
+        <div class="contact-actions">
+          <a href="tel:+1234567890" class="contact-action">Call us</a>
+          <a href="mailto:hello@amarasbakery.com" class="contact-action"
+            >Email</a
           >
-            Cookies
-          </button>
-        </li>
-        <li>
-          <button onclick="Category(this)" id="breadbtn" data-category="bread">
-            Breads
-          </button>
-        </li>
-        <li>
-          <button onclick="MenuOptions(this)" id="specialbtn">Special</button>
-        </li>
-      </ul>
-    </div>
-
-    <div class="site-body">
-      <div class="menu">
-        <div class="menu-list" id="bread-menu-home">
-          <h2 class="menu-header">All Products</h2>
-          <div class="menu-container" id="menu_container"></div>
+          <a
+            href="https://www.instagram.com/"
+            target="_blank"
+            rel="noreferrer"
+            class="contact-action"
+            >Instagram</a
+          >
+          <a
+            href="https://maps.google.com/?q=Amara%27s+Bakery"
+            target="_blank"
+            rel="noreferrer"
+            class="contact-action"
+            >Meet us</a
+          >
         </div>
       </div>
-    </div>
+
+      <div class="contact-grid">
+        <section class="contact-form-wrap">
+          <h2>Get In Touch</h2>
+          <p>Need to talk to me? Send me a message now!</p>
+          <form class="contact-form" action="#">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required />
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required />
+
+            <label for="subject">Subject</label>
+            <input type="text" id="subject" name="subject" required />
+
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" required></textarea>
+
+            <button type="submit">Send</button>
+          </form>
+        </section>
+
+        <aside class="contact-info">
+          <h3>Visit Amara's Bakery</h3>
+          <p>123 Baker Street</p>
+          <p>blah, blah, germany?</p>
+          <p>Mon - Sat: 8:00am - 5:00pm</p>
+        </aside>
+      </div>
+    </main>
 
     <footer>
       <div class="footer-container">
@@ -113,6 +126,7 @@
         </div>
       </div>
     </footer>
+
     <script src="./js/main.js"></script>
   </body>
 </html>

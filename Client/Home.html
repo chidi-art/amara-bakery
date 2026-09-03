@@ -3,7 +3,16 @@
   <head>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Bree+Serif&family=DM+Sans:opsz,wght@9..40,100..1000&family=Fraunces:opsz,wght@9..144,100..900&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet"
+    />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Amara's Bakery</title>
@@ -11,21 +20,175 @@
   </head>
   <body>
     <nav class="navbar">
-      <ul class="navlinks"><li><a href="Home.html" class="active">Home</a></li><li><a href="Menu.html">Menu</a></li><li><a href="#">Contact</a></li><li><a href="Cart.html" class="cart-link">Cart</a></li></ul>
-      <div class="user-container"><div class="nav-user"><div class="user-icon" aria-label="User account"><button id="user-button">h</button></div></div><div class="user-dropdown"><div class="user-info"><strong id="user-name">Za Boss</strong><p id="user-email">zaboss@gmail.com</p></div><hr /><a href="#" class="user-links">Account Settings</a><a href="#" class="user-links">Orders</a><a href="#" class="logout">Log Out</a></div></div>
-    </nav>
-    <div class="hero"><h1>Amara's</h1><h2>Bakery</h2><div id="hero-buttons"><a class="button" href="Menu.html">Order now</a><a class="button" href="Menu.html">See menu</a></div></div>
-    <div class="site-body">
-      <div class="menu" id="home-menu">
-        <div class="home-menu-list" id="bread-menu-home"><h2 class="menu-header">Breads</h2><div class="menu-container"></div></div>
-        <div class="home-menu-list" id="cookie-menu-home"><h2 class="menu-header">Cookies</h2><div class="menu-container"></div></div>
-        <div class="home-menu-list" id="special-menu-home"><h2 class="menu-header">Specials</h2><div class="menu-container"></div></div>
-        <div id="see-more-button"><a class="button" href="Menu.html">See full menu</a></div>
+      <ul class="navlinks">
+        <li><a href="Home.html" class="active">Home</a></li>
+        <li><a href="Menu.html">Menu</a></li>
+        <li><a href="contactus.html">Contact</a></li>
+        <li><a href="Cart.html" class="cart-link">Cart</a></li>
+      </ul>
+
+      <div class="user-container">
+        <div class="nav-user">
+          <div class="user-icon" aria-label="User account">
+            <button id="user-button">h</button>
+          </div>
+        </div>
+
+        <div class="user-dropdown">
+          <div class="user-info">
+            <strong id="user-name">Za Boss</strong>
+            <p id="user-email">zaboss@gmail.com</p>
+          </div>
+          <hr />
+          <a href="#" class="user-links">Account Settings</a>
+          <a href="#" class="user-links">Orders</a>
+          <a href="#" class="logout">Log Out</a>
+        </div>
       </div>
-      <div id="about-me"><div class="img-amara"><img src="./Images/Baker.png" alt="Amara baking" /></div><div id="about-me-container"><h2>A little about me</h2><p id="about-me-text">I started baking because I loved it. Everything is baked to order, from cookies and cakes to banana bread and croissants.</p></div></div>
-      <div id="order-now"><div id="order-now-container"><h2>Just try it</h2><p>Fresh baking, made with care and ready for your table.</p><a class="button" href="Menu.html">Order now</a></div></div>
+    </nav>
+    <div class="hero">
+      <h3>WELCOME TO</h3>
+      <h1>Amara<span id="s">'s</span></h1>
+      <h2>Menu</h2>
+      <div id="hero-buttons">
+        <a class="button" id="herobtn1" href="Menu.html">See menu</a>
+        <a class="button" id="herobtn2" href="Menu.html">About me</a>
+      </div>
     </div>
-    <footer><div class="footer-container"><div class="footer-brand"><h2>Amara's Bakery</h2><p>Made with love</p></div><div class="footer-links"><h3>Quick Links</h3><a href="Home.html">Home</a><a href="Menu.html">Menu</a><a href="Cart.html">Cart</a><a href="Menu.html">Order now</a></div><div class="footer-links"><h3>Follow Us</h3><a href="#">Contact</a><a href="#">Instagram</a></div><div class="footer-end"><p>&copy; 2026 Amara's Bakery. All rights reserved</p></div></div></footer>
+    <div class="site-body">
+      <div class="menu reveal" id="home-menu">
+        <div class="menu" id="home-menu">
+          <div class="home-menu-list" id="bread-menu-home">
+            <h2 class="menu-header">Breads</h2>
+            <div class="menu-container"></div>
+          </div>
+          <div class="home-menu-list" id="cookie-menu-home">
+            <h2 class="menu-header">Cookies</h2>
+            <div class="menu-container"></div>
+          </div>
+          <div class="home-menu-list" id="special-menu-home">
+            <h2 class="menu-header">Specials</h2>
+            <div class="menu-container"></div>
+          </div>
+          <div id="see-more-button">
+            <a class="button" href="Menu.html">See full menu</a>
+          </div>
+        </div>
+      </div>
+      <div id="about-me" class="reveal">
+        <div class="img-amara"><img src="./Images/Baker.png" /></div>
+        <div id="about-me-container">
+          <h2>A little about me</h2>
+          <p id="about-me-text">
+            This is one place you’ll never regret trying. Give it a go, and
+            you’ll definitely tell one or two friends about it. I really look
+            forward to having you!
+          </p>
+        </div>
+      </div>
+      <div id="why-pick-me" class="reveal">
+        <div id="why-pick-me-container">
+          <h2>Why Order from me?</h2>
+          <p id="why-pick-me-text">
+            I’m self taught, so every recipe here is one I actually put in the
+            hours to perfect. The banana bread is the kind you go back for
+            seconds on, and cookies are soft in the middle, crisp on the edge,
+            all the stuff you want.
+          </p>
+        </div>
+      </div>
+      <div id="order-now" class="reveal">
+        <div id="order-now-container">
+          <h2>Just try it</h2>
+          <p id="why-pick-me-text">
+            This is one place you’ll never regret trying. Give it a go, and
+            you’ll definitely tell one or two friends about it. I really look
+            forward to having you!
+          </p>
+          <a class="button" href="Menu.html">Order now</a>
+        </div>
+      </div>
+
+      <div id="events" class="reveal">
+        <h1>Have an event?</h1>
+        <h4>Get in touch with Amara to plan out your order</h4>
+
+        <div id="events-container">
+          <div class="events-box">Weddings</div>
+          <div class="events-box">Birthdays</div>
+          <div class="events-box">Parties</div>
+          <div class="events-box">Get-togethers</div>
+        </div>
+
+        <a href="#" class="contact-btn">Call now</a>
+      </div>
+      <div id="review" class="reveal">
+        <h1>See what others are saying</h1>
+        <div id="review-container">
+          <div class="review-box">
+            <div class="review-txt">
+              <p>I love the super mint choc cookies!</p>
+            </div>
+            <div class="reviewer">
+              <div class="reviewer-avatar"></div>
+              <p>Za Boss</p>
+            </div>
+          </div>
+          <div class="review-box">
+            <div class="review-txt">
+              <p>The pastries are to die for, delicious.</p>
+            </div>
+            <div class="reviewer">
+              <div class="reviewer-avatar"></div>
+              <p>Yrz Trly</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="write-review" class="reveal">
+        <h1>Leave a review</h1>
+        <div id="write-review-container">
+          <div class="write-review-box">
+            <form>
+              <label for="name">Your Name</label>
+              <input type="text" id="name" />
+              <label for="comment">Your Review</label>
+              <textarea rows="4" id="comment">
+Write your review here...</textarea
+              >
+              <button type="submit" class="review-btn">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <div class="footer-container reveal">
+        <div class="footer-brand">
+          <h2>Amara's Menu</h2>
+          <p>Made with love</p>
+        </div>
+        <div class="footer-links">
+          <h3>Quick Links</h3>
+          <a href="Home.html">Home</a>
+          <a href="Home.html">Menu</a>
+          <a href="Home.html">Contact</a>
+          <a href="Home.html">Order now</a>
+        </div>
+
+        <div class="footer-links">
+          <h3>Follow Us</h3>
+          <a href="Home.html">Home</a>
+          <a href="Home.html">Menu</a>
+          <a href="Home.html">Contact</a>
+          <a href="Home.html">Order now</a>
+        </div>
+
+        <div class="footer-end">
+          <p>&copy; 2026 Amara's Menu. All rights reserved</p>
+        </div>
+      </div>
+    </footer>
     <script src="./js/main.js"></script>
   </body>
 </html>
