@@ -251,6 +251,7 @@ MenuOptions();
 initializeProductDetails();
 
 carosel_images = [
+  "herone.png",
   "first__.jpeg",
   "download0.jpeg",
   "download1.jpeg",
@@ -461,6 +462,11 @@ function renderCart() {
   if (!cartBox) return;
   cartBox.innerHTML = "";
   localStorage.setItem("cart", JSON.stringify(cart));
+  if (cart.length === 0) {
+    cartBox.innerHTML = '<p class="empty-cart-message">Your cart is empty.</p>';
+    return;
+  }
+
   cart.forEach((product) => {
     cartBox.innerHTML += `
 <div class="cart-box-container">
