@@ -162,6 +162,7 @@ async function initializeProductDetails() {
 
 let carouselIndex = 0;
 const carouselImages = [
+  
   "first__.jpeg",
   "download0.jpeg",
   "download1.jpeg",
@@ -312,7 +313,184 @@ if (userButton && userDropdown)
   userButton.addEventListener("click", () =>
     userDropdown.classList.toggle("show"),
   );
+<<<<<<< HEAD
 updateCartCount();
 renderCart();
 updateCartTotals();
 loadProducts();
+=======
+  const quantity = Math.max(
+    1,
+    Math.min(
+      10,
+      Number(details?.querySelector(".product-qty input")?.value) || 1,
+    ),
+  );
+  const image =
+    box?.querySelector("img")?.getAttribute("src") ||
+    details?.querySelector(".product-img")?.getAttribute("src") ||
+    "Images/products/IMG_0979.JPG";
+  if (!name || !price) return;
+  const product = cart.find((item) => item.name === name);
+  if (product) {
+    product.quantity = Math.min(10, product.quantity + 1);
+    product.image ||= image;
+  } else cart.push({ name, price, quantity, image });
+  const savedProduct = cart.find((item) => item.name === name);
+  const quantityInput = details?.querySelector(".product-qty input");
+  if (quantityInput) quantityInput.value = savedProduct.quantity;
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartCount();
+  button.textContent = "Added";
+  setTimeout(() => (button.textContent = "Add to Cart"), 1000);
+}
+
+function initializeProductDetails() {
+  const details = document.querySelector(".product-body");
+  if (!details || details.id === "product_body") return;
+  const productIndex = Number(
+    new URLSearchParams(location.search).get("product"),
+  );
+  const product =
+    images[
+      Number.isInteger(productIndex) && productIndex >= 0 ? productIndex : 0
+    ];
+  details.querySelector(".product-img").src = `./${product.src}`;
+  details.querySelector(".product-img").alt = product.name;
+  details.querySelector(".product-name").textContent = product.name;
+  details.querySelector(".product-price").textContent = `${product.price}kr`;
+  const addButton = details.querySelector(".add-to-cart");
+  addButton.dataset.name = product.name;
+  addButton.dataset.price = product.price;
+  const cartProduct = cart.find((item) => item.name === product.name);
+  details.querySelector(".product-qty input").value =
+    cartProduct?.quantity ?? 0;
+  document.title = product.name;
+}
+
+if (cartBox) {
+  renderCart();
+  updateCartTotals();
+  setQtyBtns();
+}
+
+function updateCartCount() {
+  const cartCount = cart.reduce((total, product) => {
+    return total + product.quantity;
+  }, 0);
+
+  if (cartLink) cartLink.textContent = `Cart (${cartCount})`;
+  const checkoutLink = document.querySelector(
+    '.checkout-btn[href="checkout.html"]',
+  );
+  if (checkoutLink) {
+    checkoutLink.classList.toggle("disabled", cartCount === 0);
+    checkoutLink.setAttribute("aria-disabled", cartCount === 0);
+    checkoutLink.tabIndex = cartCount === 0 ? -1 : 0;
+  }
+}
+
+function getProductImage(product) {
+  return (
+    product.image ||
+    images.find((item) => item.name === product.name)?.src ||
+    "Images/products/IMG_0979.JPG"
+  );
+}
+
+function updateCartTotals() {
+  if (!subTotalBox || !taxBox || !totalBox) return;
+  let subTotal = 0;
+  const taxRate = 0.75;
+  cart.forEach((product) => {
+    subTotal += product.price * product.quantity;
+    console.log(product);
+  });
+
+  let tax = taxRate * subTotal;
+  let total = subTotal + tax;
+  subTotalBox.textContent = `${subTotal} kr`;
+  taxBox.textContent = `${tax} kr`;
+  totalBox.textContent = `${total} kr`;
+  console.log(subTotal);
+}
+
+function renderCart() {
+  if (!cartBox) return;
+  cartBox.innerHTML = "";
+  localStorage.setItem("cart", JSON.stringify(cart));
+  if (cart.length === 0) {
+    cartBox.innerHTML = '<p class="empty-cart-message">Your cart is empty.</p>';
+    return;
+  }
+
+  cart.forEach((product) => {
+    cartBox.innerHTML += `
+<div class="cart-box-container">
+    <div class="cart-box-product">
+  <img src="./${getProductImage(product)}" alt="${product.name}" />
+    <p>${product.name}</p>
+    </div>
+    <div class="cart-btns">
+    <div class="cart-price">${product.price * product.quantity} kr</div>
+    <div class="cart-qty">
+                  <button class="qty-btn minus-btn" data-name="${product.name}">−</button>
+                  <input
+                  data-name="${product.name}"
+                    class="numinput"
+                    type="number"
+                    value="${product.quantity}"
+                    min="1"
+                    max="10"
+                    readonly
+                  />
+                  <button class="qty-btn plus-btn" data-name="${product.name}">+</button>
+    </div>
+                </div>
+                </div>`;
+  });
+}
+
+function setQtyBtns() {
+  const increaseBtns = document.querySelectorAll(".qty-btn.plus-btn");
+  const decreaseBtns = document.querySelectorAll(".qty-btn.minus-btn");
+
+  increaseBtns.forEach((button) => {
+    button.addEventListener("click", () => {
+      const productName = button.dataset.name;
+      const product = cart.find((item) => item.name === productName);
+      if (!product) return;
+      if (product.quantity < 10) {
+        product.quantity++;
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        renderCart();
+        updateCartTotals();
+        updateCartCount();
+        setQtyBtns();
+      }
+    });
+  });
+  decreaseBtns.forEach((button) => {
+    button.addEventListener("click", () => {
+      const productName = button.dataset.name;
+      const product = cart.find((item) => item.name === productName);
+      if (!product) return;
+      if (product.quantity > 1) {
+        product.quantity--;
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+      } else {
+        const productIndex = cart.findIndex(
+          (item) => item.name === productName,
+        );
+        cart.splice(productIndex, 1);
+      }
+      renderCart();
+      setQtyBtns();
+      updateCartTotals();
+      updateCartCount();
+    });
+  });
+}
+>>>>>>> 6cee369f10db0aa8ec7bc35946027583cfa55ee4

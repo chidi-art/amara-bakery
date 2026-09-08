@@ -3,12 +3,53 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+:root {
+  --font-heading: "Zilla Slab", serif;
+  --font-body: "Inter", sans-serif;
+  --font-display: "Fraunces", serif;
+  --font-accent: "Bree Serif", serif;
+}
+
 .site-body {
   margin: 0;
+  position: relative;
+  isolation: isolate;
+}
+
+.site-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url(/Client/Images/bakepng.png) center / 2000px;
+  opacity: 0.2;
+  z-index: -1;
 }
 
 body.cart-page .site-body {
   margin: 0;
+}
+
+body.cart-page {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.82)),
+    url(/Client/Images/bakepng.png) center / cover fixed;
+}
+
+body.cart-page .site-body::before {
+  display: none;
+}
+
+body.cart-page .navbar,
+body.checkout-page .navbar,
+body.checkout-page #checkout-nav {
+  background-color: transparent;
+}
+
+body.checkout-page {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.82)),
+    url(/Client/Images/bakepng.png) center / cover fixed;
 }
 
 body.contact-page-body {
@@ -16,7 +57,7 @@ body.contact-page-body {
 }
 
 body :is(h1, h2, h3, h4, h5, h6) {
-  font-family: "Zilla Slab", serif;
+  font-family: var(--font-heading);
   font-weight: 500;
 }
 
@@ -33,7 +74,7 @@ body h3 {
 }
 
 body {
-  font-family: "inter", sans-serif;
+  font-family: var(--font-body);
   font-weight: 200;
 }
 
@@ -86,10 +127,34 @@ body {
   z-index: 1;
 }
 
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 80px;
+  left: 0;
+  bottom: -10px;
+  background: white;
+  --mask:
+    radial-gradient(34.99px at 50% 48px, #000 99%, #0000 101%) calc(50% - 60px)
+      0/120px 100%,
+    radial-gradient(34.99px at 50% -18px, #0000 99%, #000 101%) 50% 30px/120px
+      100% repeat-x;
+  -webkit-mask: var(--mask);
+  mask: var(--mask);
+  z-index: 10;
+  pointer-events: none;
+}
+
 .auth-brand {
   display: flex;
   flex-direction: column;
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: clamp(2.2rem, 4vw, 3.4rem);
   line-height: 1;
 }
@@ -119,7 +184,7 @@ body {
 
 .auth-title {
   margin: 0 0 24px;
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   color: #f88f22;
   font-size: clamp(2.2rem, 4vw, 3rem);
 }
@@ -231,7 +296,7 @@ body {
 }
 
 .fraunces {
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-optical-sizing: auto;
   font-style: normal;
   font-variation-settings:
@@ -240,32 +305,32 @@ body {
 }
 
 .bree-serif-regular {
-  font-family: "Bree Serif", serif;
+  font-family: var(--font-accent);
   font-weight: 400;
   font-style: normal;
 }
 
 .inter {
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
   font-optical-sizing: auto;
   font-weight: 300;
   font-style: normal;
 }
 
 .zilla-slab-regular {
-  font-family: "Zilla Slab", serif;
+  font-family: var(--font-heading);
   font-weight: 400;
   font-style: normal;
 }
 
 .zilla-slab-medium {
-  font-family: "Zilla Slab", serif;
+  font-family: var(--font-heading);
   font-weight: 500;
   font-style: normal;
 }
 
 .zilla-slab-bold {
-  font-family: "Zilla Slab", serif;
+  font-family: var(--font-heading);
   font-weight: 700;
   font-style: normal;
 }
@@ -283,7 +348,12 @@ body {
   position: relative;
   justify-content: center;
   padding: 0 40px;
+  min-width: max-content;
   background-color: #ffefe8;
+}
+
+#checkout-nav {
+  background-color: white;
 }
 
 .menu-page .menu-navbar {
@@ -313,7 +383,9 @@ body {
   position: static;
   transform: none;
   border-radius: 20px;
-  width: 50%;
+  width: max-content;
+  min-width: max-content;
+  flex-shrink: 0;
   background-color: white;
   margin-top: 20px;
   justify-content: center;
@@ -392,7 +464,7 @@ body {
 .navlinks a:hover {
   color: white;
   background-color: #f88f22;
-  border-radius: 8px;
+  border-radius: 20px;
 }
 
 .navlinks a:focus-visible {
@@ -426,13 +498,13 @@ body {
 
 .hero h1 {
   font-size: 200px;
-  font-family: "zilla-slab-bold";
+  font-family: var(--font-heading);
   color: #104c64;
   font-weight: bold;
 }
 
 .hero h2 {
-  font-family: "zilla-slab-bold";
+  font-family: var(--font-heading);
   color: #f88f22;
   font-weight: bold;
   font-size: 100px;
@@ -477,6 +549,8 @@ body {
 .menu {
   margin: 0;
   padding: 70px clamp(20px, 5vw, 80px);
+  position: relative;
+  isolation: isolate;
 }
 
 .menu-box-img {
@@ -550,7 +624,7 @@ body {
 }
 
 .menu-box {
-  background-color: white;
+  background-color: transparent;
   width: 280px;
   min-height: 285px;
   height: 100%;
@@ -615,6 +689,18 @@ body {
 
 .contact-page {
   max-width: 100%;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.contact-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url(/Client/Images/bakepng.png) center / 2000px;
+  opacity: 0.2;
+  z-index: -1;
 }
 
 .contact-header {
@@ -641,6 +727,7 @@ body {
 #color {
   background-color: #ffefe8;
   padding: 20px;
+  box-shadow: 0 6px 14px rgba(77, 42, 28, 0.14);
 }
 
 .contact-actions {
@@ -677,6 +764,7 @@ body {
   width: min(100%, 1000px);
   margin-right: auto;
   margin-left: auto;
+  margin-bottom: 80px;
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(220px, 0.8fr);
   gap: 20px;
@@ -771,6 +859,39 @@ body {
   .contact-info {
     padding: 24px 20px;
   }
+
+  .contact-form {
+    width: 100%;
+  }
+
+  #events,
+  #review,
+  #write-review {
+    padding: 60px 20px;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  #events-container {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+
+  #events::before,
+  #review::before,
+  #write-review::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url(/Client/Images/bakepng.png) center / 2000px;
+    opacity: 0.2;
+    z-index: -1;
+  }
+
+  #write-review-container {
+    width: 100%;
+    height: auto;
+  }
 }
 
 #about-me {
@@ -813,10 +934,12 @@ body {
 #why-pick-me {
   background-color: #104c64;
   color: white;
-  height: 250px;
+  height: auto;
   padding: 100px;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
   font-size: 20px;
 }
 
@@ -825,13 +948,26 @@ body {
   max-width: 500px;
 }
 
+.order-now-cakeslice {
+  width: min(320px, 35vw);
+  max-height: 320px;
+  object-fit: contain;
+  transform: translateY(-80px);
+}
+
+.why-pick-me-baker {
+  width: min(360px, 35vw);
+  max-height: 360px;
+  object-fit: contain;
+}
+
 #order-now {
   background-color: #104c64;
   color: white;
   padding: 100px;
-  height: 400px;
+  gap: 80px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   text-align: right;
   font-size: 20px;
   height: auto;
@@ -849,7 +985,7 @@ body {
   justify-content: center;
   align-items: center;
   padding: 100px;
-  background-color: white;
+  background-color: transparent;
   color: #104c64;
 }
 
@@ -902,6 +1038,7 @@ body {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  background-color: transparent;
 }
 
 #review-container {
@@ -976,6 +1113,7 @@ body {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  background-color: transparent;
 }
 
 #write-review h1 {
@@ -995,6 +1133,7 @@ body {
   margin: 30px 0px 50px;
   border-radius: 10px;
   padding: 30px;
+  background-color: white;
 }
 
 .write-review-box {
@@ -1071,7 +1210,7 @@ body {
   width: 500px;
   text-align: center;
   z-index: 1000;
-  font-family: "inter";
+  font-family: var(--font-body);
   font-weight: 900;
   line-height: 1.4;
   background: none;
@@ -1274,7 +1413,7 @@ input[type="number"] {
   padding: 70px 20px 90px;
   margin: 0;
   max-width: 100%;
-  background-color: #ffefe8;
+  background-color: transparent;
 }
 
 .cart-container h1 {
@@ -1295,6 +1434,7 @@ input[type="number"] {
   padding: 28px;
   border-radius: 10px;
   width: 100%;
+  box-shadow: 0 8px 24px rgba(77, 42, 28, 0.12);
 }
 
 .cart-products h2 {
@@ -1316,6 +1456,7 @@ input[type="number"] {
   padding: 28px;
   border-radius: 10px;
   height: fit-content;
+  box-shadow: 0 8px 24px rgba(77, 42, 28, 0.12);
 }
 .product-box {
   display: flex;
@@ -1324,6 +1465,15 @@ input[type="number"] {
   background-color: transparent;
   padding: 0;
   height: fit-content;
+}
+
+.empty-cart-message {
+  color: #4d2a1c;
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 30px 0;
+  margin-top: 40px;
+  opacity: 0.7;
 }
 
 .product-box[hidden] {
@@ -1400,6 +1550,7 @@ input[type="number"] {
   background-color: white;
   border: 1px solid #f1d8c9;
   border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(77, 42, 28, 0.1);
 }
 
 .cart-price {
@@ -1451,19 +1602,25 @@ input[type="number"] {
 }
 
 .checkout-container {
+  position: relative;
+  z-index: 1;
   padding: 40px 20px;
   margin: 40px 0;
   display: grid;
   grid-template-columns: 2fr 1fr;
 }
-.checkout-site-body {
-  background-color: #f5f5f5;
-}
+
 .checkout-container h1 {
   color: #f88f22;
   margin-bottom: 30px;
   font-size: 40px;
   grid-column: 1 / -1;
+}
+
+.checkout-site-body {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
 }
 
 .checkout-contact h2 {
@@ -1501,6 +1658,7 @@ input[type="number"] {
 .checkout-summary h2 {
   color: #f88f22;
   margin-bottom: 12px;
+  font-size: 30px;
 }
 
 .payment-note {
@@ -1532,6 +1690,13 @@ input[type="number"] {
   background-color: white;
   grid-column: 2;
 }
+
+.checkout-summary,
+.checkout-address,
+.checkout-contact {
+  box-shadow: 0 8px 24px rgba(77, 42, 28, 0.12);
+}
+
 .checkout-amt-container {
   display: flex;
   flex-direction: row;
@@ -1542,21 +1707,24 @@ input[type="number"] {
   display: flex;
   flex-direction: column;
   margin-bottom: 12px;
-  font-size: 20px;
+  font-size: 15px;
   color: #333;
+  line-height: 1.5;
 }
 .tag-row {
   display: flex;
   flex-direction: column;
   margin-bottom: 12px;
-  font-size: 20px;
+  font-size: 15px;
   color: #333;
+  line-height: 1.5;
 }
 
 .checkout-address {
   margin-top: 20px;
   height: fit-content;
   padding: 20px;
+  font-size: 15px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
@@ -1577,7 +1745,7 @@ input[type="number"] {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-bottom: 12px;
-  font-size: 20px;
+  font-size: 15px;
   background-color: white;
   color: #333;
   height: fit-content;
@@ -1707,6 +1875,56 @@ input[type="number"] {
     width: 100%;
   }
 
+  .home-menu-list .menu-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-menu-list .menu-box {
+    width: 100%;
+  }
+
+  #about-me {
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 24px;
+  }
+
+  .img-amara {
+    width: 60%;
+    min-width: 60%;
+    height: auto;
+  }
+
+  #about-me-container {
+    width: min(100%, 400px);
+  }
+
+  #why-pick-me {
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 24px;
+  }
+
+  .why-pick-me-baker {
+    width: min(280px, 80vw);
+  }
+
+  #order-now {
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 24px;
+    text-align: center;
+  }
+
+  .order-now-cakeslice {
+    width: min(260px, 75vw);
+  }
+
+  #order-now a {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .product-body {
     flex-direction: column;
     margin: 30px 20px;
@@ -1792,7 +2010,7 @@ footer {
 
 .carousel-container {
   width: 100%;
-  height: 600px;
+  height: 450px;
   overflow: hidden;
   background-color: #000;
   position: relative;
@@ -1834,8 +2052,6 @@ footer {
   justify-self: center;
   pointer-events: none;
   aspect-ratio: 1896 / 500;
-  scale: calc(1.275);
-  transform: translateY(38px);
   z-index: 99;
   border-bottom: 2px solid goldenrod;
 }
