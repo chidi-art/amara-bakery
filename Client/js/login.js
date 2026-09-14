@@ -39,25 +39,51 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const userName =
-      form.id === "signupForm"
-        ? form.querySelector("#signupName")?.value.trim() || "Bakery Customer"
-        : "Bakery Customer";
-
-    const user = {
-      name: userName,
+    const apiBase = window.API_BASE || "http://localhost:5000/api";
+    const request = {
       email: emailInput.value.trim(),
+      password: passwordInput.value,
     };
+    if (form.id === "signupForm") {
+      request.name = form.querySelector("#signupName")?.value.trim();
+    }
 
-    localStorage.setItem("bakeryUser", JSON.stringify(user));
     validationMessage.style.color = "#2b2b2b";
-    validationMessage.textContent =
-      form.id === "signupForm"
-        ? "Account created. Redirecting…"
-        : "Login successful. Redirecting…";
-
-    setTimeout(() => {
-      window.location.href = "Home.html";
-    }, 500);
+    validationMessage.textContent = "Checking your details...";
+    fetch(
+      `${apiBase}/auth/${form.id === "signupForm" ? "register" : "login"}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(request),
+      },
+    )
+      .then(async (response) => {
+        const body = await response.json();
+        if (!response.ok) throw new Error(body.message || "Unable to continue");
+        return body;
+      })
+      .then((body) => {
+        localStorage.setItem("bakeryToken", body.token);
+        localStorage.setItem(
+          "bakeryUser",
+          JSON.stringify({
+            ...body.user,
+            name: `${body.user.firstName || ""} ${body.user.lastName || ""}`.trim(),
+          }),
+        );
+        validationMessage.textContent =
+          form.id === "signupForm"
+            ? "Account created. Redirecting..."
+            : "Login successful. Redirecting...";
+        setTimeout(() => {
+          window.location.href =
+            body.user.role === "admin" ? "admin.html" : "Home.html";
+        }, 500);
+      })
+      .catch((error) => {
+        validationMessage.style.color = "#bd3d2e";
+        validationMessage.textContent = error.message;
+      });
   });
 });

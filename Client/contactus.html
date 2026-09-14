@@ -24,7 +24,9 @@
       <div class="user-container">
         <div class="nav-user">
           <div class="user-icon" aria-label="User account">
-            <button id="user-button">h</button>
+            <button id="user-button" aria-label="Open user account">
+              <img src="./Images/user.png" alt="" />
+            </button>
           </div>
         </div>
 
@@ -48,9 +50,17 @@
         </div>
 
         <div class="contact-actions">
-          <a href="tel:+1234567890" class="contact-action">Call us</a>
+          <a href="tel:+1234567890" class="contact-action">
+            <img
+              class="contact-action-icon"
+              src="./Images/phone-call.png"
+              alt=""
+            />
+            <span>Call us</span>
+          </a>
           <a href="mailto:hello@amarasbakery.com" class="contact-action"
-            >Email</a
+            ><img class="contact-action-icon" src="./Images/email.png" alt="" />
+            <span>Email</span></a
           >
           <a
             href="https://www.instagram.com/"
@@ -59,13 +69,6 @@
             class="contact-action"
             >Instagram</a
           >
-          <a
-            href="https://maps.google.com/?q=Amara%27s+Bakery"
-            target="_blank"
-            rel="noreferrer"
-            class="contact-action"
-            >Meet us</a
-          >
         </div>
       </div>
 
@@ -73,7 +76,7 @@
         <section class="contact-form-wrap">
           <h2>Get In Touch</h2>
           <p>Need to talk to me? Send me a message now!</p>
-          <form class="contact-form" action="#">
+          <form class="contact-form" id="contact-form" action="#">
             <label for="name">Name</label>
             <input type="text" id="name" name="name" required />
 
@@ -87,6 +90,11 @@
             <textarea id="message" name="message" rows="5" required></textarea>
 
             <button type="submit">Send</button>
+            <p
+              id="contact-message"
+              class="validation-message"
+              aria-live="polite"
+            ></p>
           </form>
         </section>
 
@@ -121,6 +129,11 @@
           <a href="Menu.html">Order now</a>
         </div>
 
+        <div class="footer-links">
+          <h3>Legal</h3>
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms-and-conditions.html">Terms and Conditions</a>
+        </div>
         <div class="footer-end">
           <p>&copy; 2026 Amara's Menu. All rights reserved</p>
         </div>

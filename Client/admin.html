@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Amara's Bakery | Admin</title>
+    <link rel="stylesheet" href="./admin.css" />
+  </head>
+  <body>
+    <div class="admin-shell">
+      <aside class="sidebar">
+        <div class="brand">Amara's<small>Owner dashboard</small></div>
+        <nav class="nav" aria-label="Admin sections">
+          <button class="active" data-view="overview">Overview</button>
+          <button data-view="orders">Orders</button>
+          <button data-view="reviews">Reviews</button>
+          <button data-view="products">Products</button>
+          <button data-view="carousel">Carousel</button>
+        </nav>
+        <div class="sidebar-footer">
+          <a href="Home.html">Visit storefront</a><br /><button
+            id="logout"
+            class="item-actions"
+            style="border: 0; background: none; color: #f7c287; padding: 8px 0"
+          >
+            Sign out
+          </button>
+        </div>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Amara's Bakery</p>
+            <h1 id="page-title">Good morning, owner.</h1>
+          </div>
+          <div class="topbar-actions">
+            <a class="primary" href="Home.html">View live site</a>
+            <p id="admin-name"></p>
+          </div>
+        </header>
+        <section class="view active" id="overview-view">
+          <div class="stats">
+            <article class="stat">
+              <p>Total orders</p>
+              <strong id="stat-orders">-</strong>
+            </article>
+            <article class="stat">
+              <p>Pending attention</p>
+              <strong id="stat-pending">-</strong>
+            </article>
+            <article class="stat">
+              <p>Products</p>
+              <strong id="stat-products">-</strong>
+            </article>
+            <article class="stat">
+              <p>Customers</p>
+              <strong id="stat-customers">-</strong>
+            </article>
+          </div>
+          <div class="dashboard-grid">
+            <section class="panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Recent orders</h2>
+                </div>
+                <button class="secondary" data-go="orders">View all</button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Order</th>
+                      <th>Customer</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recent-orders"></tbody>
+                </table>
+              </div>
+            </section>
+            <section class="panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Notifications</h2>
+                  \
+                </div>
+              </div>
+              <div id="notifications"></div>
+            </section>
+          </div>
+        </section>
+        <section class="view" id="orders-view">
+          <div class="panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Orders</h2>
+              </div>
+              <button class="secondary" id="refresh-orders">Refresh</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Placed</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="orders-table"></tbody>
+              </table>
+            </div>
+            <p class="message" id="order-message" aria-live="polite"></p>
+          </div>
+        </section>
+        <section class="view" id="products-view">
+          <div class="panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Products</h2>
+                <p>Add, edit, hide, or remove items from the menu.</p>
+              </div>
+            </div>
+            <form id="product-form">
+              <input type="hidden" id="product-id" />
+              <div class="form-grid">
+                <div class="field">
+                  <label for="product-name">Name</label
+                  ><input id="product-name" required />
+                </div>
+                <div class="field">
+                  <label for="product-price">Price</label
+                  ><input
+                    id="product-price"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label for="product-category">Category</label
+                  ><select id="product-category" required></select>
+                </div>
+                <div class="field full">
+                  <label for="product-image">Image path or URL</label
+                  ><input
+                    id="product-image"
+                    placeholder="Images/products/your-image.jpg"
+                    required
+                  />
+                </div>
+                <div class="field full">
+                  <label for="product-description">Description</label
+                  ><textarea id="product-description"></textarea>
+                </div>
+                <div class="field">
+                  <label
+                    ><input id="product-available" type="checkbox" checked />
+                    Available to customers</label
+                  >
+                </div>
+              </div>
+              <div class="actions">
+                <button class="primary" type="submit" id="product-submit">
+                  Add product</button
+                ><button class="secondary" type="button" id="product-cancel">
+                  Clear
+                </button>
+              </div>
+              <p class="message" id="product-message" aria-live="polite"></p>
+            </form>
+            <div class="product-list" id="product-list"></div>
+          </div>
+        </section>
+        <section class="view" id="reviews-view">
+          <div class="panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Reviews</h2>
+                <p>
+                  Approve customer reviews before they appear on the storefront.
+                </p>
+              </div>
+              <button class="secondary" id="refresh-reviews">Refresh</button>
+            </div>
+            <div class="product-list" id="review-list"></div>
+            <p class="message" id="review-message" aria-live="polite"></p>
+          </div>
+        </section>
+        <section class="view" id="carousel-view">
+          <div class="panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Carousel pictures</h2>
+                <p>Manage the images shown at the top of the menu.</p>
+              </div>
+            </div>
+            <form id="carousel-form">
+              <input type="hidden" id="slide-id" />
+              <div class="form-grid">
+                <div class="field full">
+                  <label for="slide-image">Image path or URL</label
+                  ><input
+                    id="slide-image"
+                    placeholder="Images/carosel_images/herone.png"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label for="slide-title">Label (optional)</label
+                  ><input id="slide-title" />
+                </div>
+                <div class="field">
+                  <label for="slide-position">Position</label
+                  ><input id="slide-position" type="number" min="0" value="0" />
+                </div>
+                <div class="field full">
+                  <label for="slide-alt">Accessibility text</label
+                  ><input id="slide-alt" value="Bakery selection" />
+                </div>
+              </div>
+              <div class="actions">
+                <button class="primary" type="submit" id="slide-submit">
+                  Add slide</button
+                ><button class="secondary" type="button" id="slide-cancel">
+                  Clear
+                </button>
+              </div>
+              <p class="message" id="slide-message" aria-live="polite"></p>
+            </form>
+            <div class="slide-list" id="slide-list"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="./js/admin.js"></script>
+  </body>
+</html>

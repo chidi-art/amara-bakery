@@ -16,14 +16,11 @@ if (!order) {
   const items = (order.items || [])
     .map((item) => `${item.name} x${item.quantity}`)
     .join(", ");
-  const address = [
-    customer.address,
-    customer.city,
-    customer.state,
-    customer.zip,
-  ]
-    .filter(Boolean)
-    .join(", ");
+  const address =
+    order.deliveryAddress ||
+    [customer.address, customer.city, customer.state, customer.zip]
+      .filter(Boolean)
+      .join(", ");
 
   document.getElementById("confirmation-order-number").textContent =
     order._id || order.orderId || "-";

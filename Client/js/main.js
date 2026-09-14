@@ -45,6 +45,7 @@ if (userDropdown) {
       <hr />
       <a href="#" class="user-links">Account Settings</a>
       <a href="#" class="user-links">Orders</a>
+      <a href="#" class="user-links delete-account">Delete Account</a>
       <a href="#" class="logout">Log Out</a>
     `;
 
@@ -54,6 +55,28 @@ if (userDropdown) {
         event.preventDefault();
         localStorage.removeItem("bakeryUser");
         window.location.href = "Home.html";
+      });
+    }
+
+    const deleteAccountLink = userDropdown.querySelector(".delete-account");
+    if (deleteAccountLink) {
+      deleteAccountLink.addEventListener("click", async (event) => {
+        event.preventDefault();
+        if (!window.confirm("Delete your account permanently?")) return;
+
+        try {
+          await fetchJson("/users/me", {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("bakeryToken")}`,
+            },
+          });
+          localStorage.removeItem("bakeryToken");
+          localStorage.removeItem("bakeryUser");
+          window.location.href = "Home.html";
+        } catch (error) {
+          window.alert(error.message || "Unable to delete account.");
+        }
       });
     }
   } else {
@@ -83,6 +106,90 @@ const fetchJson = async (path, options) => {
   if (!response.ok) throw new Error(body.message || "Request failed");
   return body;
 };
+const escapeHtml = (value) =>
+  String(value ?? "").replace(
+    /[&<>"']/g,
+    (character) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        character
+      ],
+  );
+
+async function loadReviews() {
+  const container = document.getElementById("review-container");
+  if (!container) return;
+  try {
+    const { reviews } = await fetchJson("/reviews");
+    const reviewSection = document.getElementById("review");
+    if (reviewSection) reviewSection.hidden = reviews.length === 0;
+    container.innerHTML = reviews
+      .map(
+        (review) =>
+          `<div class="review-box"><div class="review-txt"><p>${escapeHtml(review.comment)}</p><span>${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}</span></div><div class="reviewer"><div class="reviewer-avatar"></div><p>${escapeHtml(`${review.user?.firstName || ""} ${review.user?.lastName || ""}`.trim() || "Customer")}</p></div></div>`,
+      )
+      .join("");
+  } catch (error) {
+    const reviewSection = document.getElementById("review");
+    if (reviewSection) reviewSection.hidden = true;
+    container.innerHTML = "";
+  }
+}
+
+function setupReviewForm() {
+  const form = document.getElementById("review-form");
+  if (!form) return;
+  const nameInput = document.getElementById("name");
+  if (nameInput && storedUser) nameInput.value = storedUser.name || "";
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const message = document.getElementById("review-message");
+    if (!localStorage.getItem("bakeryToken")) {
+      message.textContent = "Please log in before leaving a review.";
+      return;
+    }
+    try {
+      await fetchJson("/reviews", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("bakeryToken")}`,
+        },
+        body: JSON.stringify({
+          rating: Number(document.getElementById("rating").value),
+          comment: document.getElementById("comment").value.trim(),
+        }),
+      });
+      form.reset();
+      if (nameInput && storedUser) nameInput.value = storedUser.name || "";
+      message.textContent = "Thank you. Your review is awaiting approval.";
+    } catch (error) {
+      message.textContent = error.message;
+    }
+  });
+}
+
+function setupContactForm() {
+  const form = document.getElementById("contact-form");
+  if (!form) return;
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const message = document.getElementById("contact-message");
+    try {
+      await fetchJson("/messages", {
+        method: "POST",
+        body: JSON.stringify({
+          name: form.name.value.trim(),
+          email: form.email.value.trim(),
+          subject: form.subject.value.trim(),
+          message: form.message.value.trim(),
+        }),
+      });
+      form.reset();
+      message.textContent = "Message sent successfully.";
+    } catch (error) {
+      message.textContent = error.message;
+    }
+  });
+}
 const productImage = (product) =>
   product.image || "Images/products/IMG_0979.JPG";
 const money = (value) => `${Number(value).toFixed(2).replace(/\.00$/, "")} kr`;
@@ -112,6 +219,18 @@ function Category(button) {
     ),
   );
 }
+function updateCategoryVisibility() {
+  document
+    .querySelectorAll(".category-links button[data-category]")
+    .forEach((button) => {
+      const category = button.dataset.category.toLowerCase();
+      const hasProducts = products.some(
+        (product) => product.category?.name?.toLowerCase() === category,
+      );
+      const categoryItem = button.closest("li");
+      if (categoryItem) categoryItem.hidden = !hasProducts;
+    });
+}
 window.MenuOptions = MenuOptions;
 window.Category = Category;
 
@@ -119,19 +238,16 @@ async function loadProducts() {
   try {
     const result = await fetchJson("/products?limit=100");
     products = result.products;
+    updateCategoryVisibility();
     if (menuOptions) renderProducts(products);
     document.querySelectorAll(".home-menu-list").forEach((section) => {
       const category = section.id.replace("-menu-home", "").replace("-", "");
       const container = section.querySelector(".menu-container");
-      if (container)
-        renderProducts(
-          products
-            .filter(
-              (product) => product.category?.name?.toLowerCase() === category,
-            )
-            .slice(0, 4),
-          container,
-        );
+      const categoryProducts = products.filter(
+        (product) => product.category?.name?.toLowerCase() === category,
+      );
+      section.hidden = categoryProducts.length === 0;
+      if (container) renderProducts(categoryProducts.slice(0, 4), container);
     });
     await initializeProductDetails();
   } catch (error) {
@@ -161,7 +277,22 @@ async function initializeProductDetails() {
 }
 
 let carouselIndex = 0;
-const carouselImages = [
+let carouselSlides = [
+  { image: "Images/carosel_images/herone.png", alt: "Bakery selection" },
+  { image: "Images/carosel_images/first__.jpeg", alt: "Bakery selection" },
+  { image: "Images/carosel_images/download0.jpeg", alt: "Bakery selection" },
+  { image: "Images/carosel_images/download1.jpeg", alt: "Bakery selection" },
+  { image: "Images/carosel_images/download2.jpeg", alt: "Bakery selection" },
+  { image: "Images/carosel_images/download3.jpeg", alt: "Bakery selection" },
+  { image: "Images/carosel_images/download4.jpeg", alt: "Bakery selection" },
+  { image: "Images/carosel_images/download5.jpeg", alt: "Bakery selection" },
+  { image: "Images/carosel_images/download6.jpeg", alt: "Bakery selection" },
+  { image: "Images/carosel_images/download7.jpeg", alt: "Bakery selection" },
+  { image: "Images/carosel_images/download8.jpeg", alt: "Bakery selection" },
+  { image: "Images/carosel_images/download9.jpeg", alt: "Bakery selection" },
+  { image: "Images/carosel_images/download10.jpeg", alt: "Bakery selection" },
+];
+const defaultCarouselImages = [
   "herone.png",
   "first__.jpeg",
   "download0.jpeg",
@@ -178,21 +309,49 @@ const carouselImages = [
 ];
 function Carousel2() {
   if (track)
-    track.innerHTML = `<img src="Images/carosel_images/${carouselImages[carouselIndex]}" class="img1" alt="Bakery selection">`;
+    track.innerHTML = `<img src="${carouselSlides[carouselIndex].image}" class="img1" alt="${carouselSlides[carouselIndex].alt || "Bakery selection"}">`;
 }
 function carousel_left() {
   carouselIndex =
-    (carouselIndex + carouselImages.length - 1) % carouselImages.length;
+    (carouselIndex + carouselSlides.length - 1) % carouselSlides.length;
   Carousel2();
 }
 function carousel_right() {
-  carouselIndex = (carouselIndex + 1) % carouselImages.length;
+  carouselIndex = (carouselIndex + 1) % carouselSlides.length;
   Carousel2();
 }
 window.carousel_left = carousel_left;
 window.carousel_right = carousel_right;
 Carousel2();
 setInterval(carousel_right, 10000);
+
+async function loadCarouselSlides() {
+  if (!track) return;
+  try {
+    const response = await fetch(`${API_BASE}/carousel`);
+    const body = await response.json();
+    if (response.ok && body.slides?.length) {
+      carouselSlides = body.slides.map((slide) => ({
+        image:
+          /^https?:\/\//i.test(slide.image) || slide.image.startsWith("/")
+            ? slide.image
+            : `./${slide.image}`,
+        alt: slide.alt || "Bakery selection",
+      }));
+      carouselIndex = 0;
+      Carousel2();
+    }
+  } catch (error) {
+    carouselSlides = defaultCarouselImages.map((image) => ({
+      image: `Images/carosel_images/${image}`,
+      alt: "Bakery selection",
+    }));
+  }
+}
+loadCarouselSlides();
+loadReviews();
+setupReviewForm();
+setupContactForm();
 
 function saveCart() {
   localStorage.setItem("cart", JSON.stringify(cart));
@@ -309,10 +468,6 @@ document.addEventListener("click", (event) => {
   )
     userDropdown.classList.remove("show");
 });
-if (userButton && userDropdown)
-  userButton.addEventListener("click", () =>
-    userDropdown.classList.toggle("show"),
-  );
 updateCartCount();
 renderCart();
 updateCartTotals();

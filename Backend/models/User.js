@@ -5,13 +5,13 @@ const userSchema = new mongoose.Schema(
     firstName: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
 
     lastName: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
 
     email: {
@@ -19,36 +19,36 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
       lowercase: true,
-      trim: true
+      trim: true,
     },
 
     password: {
       type: String,
-      required: true
+      required: true,
     },
 
     phone: {
       type: String,
-      required: true
+      required: false,
+      trim: true,
     },
 
     role: {
       type: String,
       enum: ["user", "admin"],
-      default: "user"
+      default: "user",
     },
 
     addresses: {
-        street: String,
-        city: String,
-        state: String,
-        postalCode: String
-      }
-  
+      street: String,
+      city: String,
+      state: String,
+      postalCode: String,
+    },
   },
   {
-    timestamps: true
-  }
+    timestamps: true,
+  },
 );
 
 module.exports = mongoose.model("User", userSchema);

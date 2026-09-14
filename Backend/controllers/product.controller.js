@@ -16,6 +16,11 @@ const getProducts = async (req, res) => {
   res.json({ success: true, products, pagination: { page: pageNumber, limit: limitNumber, total, pages: Math.ceil(total / limitNumber) } });
 };
 
+const getAdminProducts = async (req, res) => {
+  const products = await Product.find().populate('category').sort({ createdAt: -1 });
+  res.json({ success: true, products });
+};
+
 const getProductById = async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) return res.status(400).json({ success: false, message: 'Invalid product ID' });
   const product = await Product.findById(req.params.id).populate('category');
@@ -35,4 +40,4 @@ const deleteProduct = async (req, res) => {
   res.json({ success: true, message: 'Product deleted' });
 };
 
-module.exports = { getProducts, getProductById, createProduct, updateProduct, deleteProduct };
+module.exports = { getProducts, getAdminProducts, getProductById, createProduct, updateProduct, deleteProduct };

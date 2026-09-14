@@ -30,7 +30,9 @@
       <div class="user-container">
         <div class="nav-user">
           <div class="user-icon" aria-label="User account">
-            <button id="user-button">h</button>
+            <button id="user-button" aria-label="Open user account">
+              <img src="./Images/user.png" alt="" />
+            </button>
           </div>
         </div>
 
@@ -124,7 +126,7 @@
         <h4>Get in touch with Amara to plan out your order</h4>
 
         <div id="events-container">
-          <div class="events-box">Weddings</div>
+          <div class="events-box">Hang-outs</div>
           <div class="events-box">Birthdays</div>
           <div class="events-box">Parties</div>
           <div class="events-box">Get-togethers</div>
@@ -132,39 +134,31 @@
       </div>
       <div id="review" class="reveal">
         <h1>See what others are saying</h1>
-        <div id="review-container">
-          <div class="review-box">
-            <div class="review-txt">
-              <p>I love the super mint choc cookies!</p>
-            </div>
-            <div class="reviewer">
-              <div class="reviewer-avatar"></div>
-              <p>Za Boss</p>
-            </div>
-          </div>
-          <div class="review-box">
-            <div class="review-txt">
-              <p>The pastries are to die for, delicious.</p>
-            </div>
-            <div class="reviewer">
-              <div class="reviewer-avatar"></div>
-              <p>Yrz Trly</p>
-            </div>
-          </div>
-        </div>
+        <div id="review-container"></div>
       </div>
       <div id="write-review" class="reveal">
         <h1>Leave a review</h1>
         <div id="write-review-container">
           <div class="write-review-box">
-            <form>
+            <form id="review-form">
               <label for="name">Your Name</label>
-              <input type="text" id="name" />
+              <input type="text" id="name" readonly />
+              <label for="rating">Rating</label>
+              <select id="rating" required>
+                <option value="5">5 stars</option>
+                <option value="4">4 stars</option>
+                <option value="3">3 stars</option>
+                <option value="2">2 stars</option>
+                <option value="1">1 star</option>
+              </select>
               <label for="comment">Your Review</label>
-              <textarea rows="4" id="comment">
-Write your review here...</textarea
-              >
+              <textarea rows="4" id="comment" required></textarea>
               <button type="submit" class="review-btn">Submit</button>
+              <p
+                id="review-message"
+                class="validation-message"
+                aria-live="polite"
+              ></p>
             </form>
           </div>
         </div>
@@ -192,6 +186,11 @@ Write your review here...</textarea
           <a href="Home.html">Order now</a>
         </div>
 
+        <div class="footer-links">
+          <h3>Legal</h3>
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms-and-conditions.html">Terms and Conditions</a>
+        </div>
         <div class="footer-end">
           <p>&copy; 2026 Amara's Menu. All rights reserved</p>
         </div>
