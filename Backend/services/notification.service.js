@@ -21,10 +21,10 @@ const getTransporter = () => {
 
 const notifyOwner = async (subject, text) => {
   const mailer = getTransporter();
-  const recipient = process.env.OWNER_EMAIL;
+  const recipient = process.env.OWNER_EMAIL || process.env.SMTP_USER;
   if (!mailer || !recipient) {
     console.warn(
-      "Owner email notification skipped: configure OWNER_EMAIL and SMTP settings.",
+      "Owner email notification skipped: configure OWNER_EMAIL or SMTP_USER and SMTP settings.",
     );
     return;
   }
@@ -42,4 +42,15 @@ const notifyOwnerSafely = (subject, text) => {
   );
 };
 
-module.exports = { notifyOwnerSafely };
+const sendEmail = async (to, subject, text) => {
+  const mailer = getTransporter();
+  if (!mailer) throw new Error("SMTP is not configured");
+  return mailer.sendMail({
+    from: process.env.SMTP_FROM || process.env.SMTP_USER,
+    to,
+    subject,
+    text,
+  });
+};
+
+module.exports = { notifyOwnerSafely, sendEmail };

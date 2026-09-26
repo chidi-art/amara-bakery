@@ -2,11 +2,16 @@ const Order = require("../models/Order");
 const { createOrder, createGuestOrder } = require("../services/order.service");
 const { notifyOwnerSafely } = require("../services/notification.service");
 
-const notifyOrder = (order, account) =>
+const notifyOrder = (order, account) => {
+  const items = order.items
+    ?.map((item) => `- ${item.name} x${item.quantity} @ ${item.price}`)
+    .join("\n");
+
   notifyOwnerSafely(
     "New bakery order received",
-    `Order: ${order._id}\nCustomer: ${order.customer?.name || (account ? `${account.firstName} ${account.lastName}` : "Registered customer")}\nEmail: ${order.customer?.email || account?.email || "Account order"}\nTotal: ${order.totalAmount}`,
+    `Order: ${order._id}\nCustomer: ${order.customer?.name || (account ? `${account.firstName} ${account.lastName}` : "Registered customer")}\nEmail: ${order.customer?.email || account?.email || "Account order"}\nPhone: ${order.customer?.phone || account?.phone || "Not provided"}\nDelivery address: ${order.deliveryAddress || "Not provided"}\nItems ordered:\n${items || "No items"}\nTotal: ${order.totalAmount}`,
   );
+};
 const create = async (req, res) => {
   const order = await createOrder(req.user._id, req.body.deliveryAddress);
   notifyOrder(order, req.user);
@@ -36,13 +41,28 @@ const getAllOrders = async (req, res) =>
       .sort({ createdAt: -1 }),
   });
 const updateStatus = async (req, res) => {
+  const previousOrder = await Order.findById(req.params.id);
+  if (!previousOrder)
+    return res.status(404).json({ success: false, message: "Order not found" });
   const order = await Order.findByIdAndUpdate(
     req.params.id,
     { status: req.body.status },
     { new: true, runValidators: true },
   );
-  if (!order)
-    return res.status(404).json({ success: false, message: "Order not found" });
+  if (req.body.status === "completed" && previousOrder.status !== "completed") {
+    const customer = order.customer || {};
+    const items = order.items
+      .map((item) => `- ${item.name} x${item.quantity} @ ${item.price}`)
+      .join("\n");
+    const orderedAt = new Date(order.createdAt).toLocaleString("en-US", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+    notifyOwnerSafely(
+      `Order completed: ${order._id}`,
+      `Order ${order._id} has been completed.\n\nCustomer: ${customer.name || "Registered customer"}\nEmail: ${customer.email || "Account order"}\nPhone: ${customer.phone || "Not provided"}\nOrder date and time: ${orderedAt}\nDelivery address: ${order.deliveryAddress}\n\nItems ordered:\n${items}\n\nTotal: ${order.totalAmount}`,
+    );
+  }
   res.json({ success: true, order });
 };
 module.exports = {

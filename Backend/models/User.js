@@ -27,6 +27,9 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
+
     phone: {
       type: String,
       required: false,
