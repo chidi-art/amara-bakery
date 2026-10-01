@@ -21,7 +21,7 @@ const getTransporter = () => {
 
 const notifyOwner = async (subject, text) => {
   const mailer = getTransporter();
-  const recipient = process.env.OWNER_EMAIL || process.env.SMTP_USER;
+  const recipient = process.env.OWNER_EMAIL || "amarasbakerymenu@gmail.com";
   if (!mailer || !recipient) {
     console.warn(
       "Owner email notification skipped: configure OWNER_EMAIL or SMTP_USER and SMTP settings.",

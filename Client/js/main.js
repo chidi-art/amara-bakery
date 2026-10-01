@@ -43,8 +43,7 @@ if (userDropdown) {
         <p id="user-email">${storedUser.email}</p>
       </div>
       <hr />
-      <a href="#" class="user-links">Account Settings</a>
-      <a href="#" class="user-links">Orders</a>
+      <a href="order-history.html" class="user-links">Orders</a>
       <a href="#" class="user-links delete-account">Delete Account</a>
       <a href="#" class="logout">Log Out</a>
     `;
@@ -92,7 +91,6 @@ if (userDropdown) {
   }
 }
 
-const taxBox = document.getElementById("tax");
 const totalBox = document.getElementById("total");
 const subTotalBox = document.getElementById("subtotal");
 const cartLink = document.querySelector(".cart-link");
@@ -176,6 +174,7 @@ function setupContactForm() {
     try {
       await fetchJson("/messages", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name.value.trim(),
           email: form.email.value.trim(),
@@ -190,12 +189,55 @@ function setupContactForm() {
     }
   });
 }
-const productImage = (product) =>
-  product.image || "Images/products/IMG_0979.JPG";
+const productImage = (product) => {
+  const image = product.image || "Images/products/IMG_0979.JPG";
+  return /^https?:\/\//i.test(image) || image.startsWith("/")
+    ? image
+    : `./${image}`;
+};
 const money = (value) => `${Number(value).toFixed(2).replace(/\.00$/, "")} kr`;
 
+function calculateCartPricing(items = cart) {
+  const cookieUnits = { classic: [], signature: [] };
+  let subtotal = 0;
+
+  items.forEach((item) => {
+    const product = products.find((entry) => entry._id === item.product);
+    const type = item.cookieType || product?.cookieType;
+    if (type && Object.hasOwn(cookieUnits, type)) {
+      for (let count = 0; count < item.quantity; count += 1) {
+        cookieUnits[type].push(Number(item.price) || 0);
+      }
+    } else {
+      subtotal += (Number(item.price) || 0) * item.quantity;
+    }
+  });
+
+  const bundleSummary = [];
+  for (const [type, bundlePrice] of Object.entries({
+    classic: 50,
+    signature: 55,
+  })) {
+    const prices = cookieUnits[type].sort((left, right) => right - left);
+    const bundleCount = Math.floor(prices.length / 3);
+    subtotal +=
+      bundleCount * bundlePrice +
+      prices.slice(bundleCount * 3).reduce((sum, price) => sum + price, 0);
+    if (bundleCount) {
+      bundleSummary.push(
+        `${bundleCount} ${type} bundle${bundleCount === 1 ? "" : "s"} (3 each): ${money(bundleCount * bundlePrice)}`,
+      );
+    }
+  }
+  return { subtotal, bundleSummary: bundleSummary.join(" · ") };
+}
+window.calculateCartPricing = calculateCartPricing;
+
 function productCard(product) {
-  return `<div class="menu-box"><div class="menu-box-div" data-product-id="${product._id}" onclick="if (!event.target.closest('.menu-add-to-cart')) location.href='Product details.html?product=${product._id}'"><div class="menu-box-img"><img src="./${productImage(product)}" alt="${product.name}"></div><div class="menu-box-txt"><span class="menu-box-name">${product.name}</span><span class="menu-box-price">${money(product.price)}</span></div><button class="menu-add-to-cart" type="button" data-product-id="${product._id}">Add to Cart</button></div></div>`;
+  const displayPrice = product.breadOptions?.length
+    ? `From ${money(product.price)}`
+    : money(product.price);
+  return `<div class="menu-box"><div class="menu-box-div" data-product-id="${product._id}" onclick="if (!event.target.closest('.menu-add-to-cart')) location.href='Product details.html?product=${product._id}'"><div class="menu-box-img"><img src="${productImage(product)}" alt="${product.name}"></div><div class="menu-box-txt"><span class="menu-box-name">${product.name}</span><span class="menu-box-price">${displayPrice}</span></div><button class="menu-add-to-cart" type="button" data-product-id="${product._id}">Add to Cart</button></div></div>`;
 }
 function renderProducts(list, container = menuOptions) {
   if (container)
@@ -206,6 +248,13 @@ function setMenuHeader(button) {
   const header = document.querySelector(".menu-header");
   if (header && button) header.textContent = button.textContent.trim();
 }
+function productMatchesCategory(product, category) {
+  const productCategory = product.category?.name?.toLowerCase();
+  if (category === "special") {
+    return product.isSpecial || productCategory === "special";
+  }
+  return productCategory === category;
+}
 function MenuOptions(button) {
   setMenuHeader(button);
   renderProducts(products);
@@ -214,9 +263,7 @@ function Category(button) {
   setMenuHeader(button);
   const category = button.dataset.category;
   renderProducts(
-    products.filter(
-      (product) => product.category?.name?.toLowerCase() === category,
-    ),
+    products.filter((product) => productMatchesCategory(product, category)),
   );
 }
 function updateCategoryVisibility() {
@@ -224,8 +271,8 @@ function updateCategoryVisibility() {
     .querySelectorAll(".category-links button[data-category]")
     .forEach((button) => {
       const category = button.dataset.category.toLowerCase();
-      const hasProducts = products.some(
-        (product) => product.category?.name?.toLowerCase() === category,
+      const hasProducts = products.some((product) =>
+        productMatchesCategory(product, category),
       );
       const categoryItem = button.closest("li");
       if (categoryItem) categoryItem.hidden = !hasProducts;
@@ -238,18 +285,35 @@ async function loadProducts() {
   try {
     const result = await fetchJson("/products?limit=100");
     products = result.products;
+    let cartChanged = false;
+    cart.forEach((item) => {
+      const product = products.find((entry) => entry._id === item.product);
+      const cookieType =
+        product?.category?.name?.toLowerCase() === "cookie"
+          ? product.cookieType
+          : undefined;
+      if (item.cookieType !== cookieType) {
+        if (cookieType) item.cookieType = cookieType;
+        else delete item.cookieType;
+        cartChanged = true;
+      }
+    });
+    if (cartChanged) saveCart();
     updateCategoryVisibility();
     if (menuOptions) renderProducts(products);
     document.querySelectorAll(".home-menu-list").forEach((section) => {
       const category = section.id.replace("-menu-home", "").replace("-", "");
       const container = section.querySelector(".menu-container");
-      const categoryProducts = products.filter(
-        (product) => product.category?.name?.toLowerCase() === category,
+      const categoryProducts = products.filter((product) =>
+        productMatchesCategory(product, category),
       );
       section.hidden = categoryProducts.length === 0;
       if (container) renderProducts(categoryProducts.slice(0, 4), container);
     });
     await initializeProductDetails();
+    renderCart();
+    updateCartTotals();
+    window.dispatchEvent(new Event("cartpricingupdated"));
   } catch (error) {
     if (menuOptions)
       menuOptions.innerHTML = `<p role="alert">${error.message}. Start the backend and run the seed command.</p>`;
@@ -261,15 +325,66 @@ async function initializeProductDetails() {
   if (!details || !productId) return;
   try {
     const { product } = await fetchJson(`/products/${productId}`);
-    details.querySelector(".product-img").src = `./${productImage(product)}`;
+    details.querySelector(".product-img").src = productImage(product);
     details.querySelector(".product-img").alt = product.name;
     details.querySelector(".product-name").textContent = product.name;
     details.querySelector(".product-desc").textContent =
       product.description || "Freshly baked to order.";
     details.querySelector(".product-price").textContent = money(product.price);
-    details.querySelector(".add-to-cart").dataset.productId = product._id;
-    details.querySelector(".product-qty input").value =
-      cart.find((item) => item.product === product._id)?.quantity || 0;
+    const addButton = details.querySelector(".add-to-cart");
+    const optionField = details.querySelector("#bread-option-field");
+    const optionSelect = details.querySelector("#bread-option");
+    const breadOptions = product.breadOptions || [];
+    const isBread = product.category?.name?.toLowerCase() === "bread";
+    addButton.dataset.productId = product._id;
+    addButton.textContent = "Add to Cart";
+    delete addButton.dataset.breadOption;
+    delete addButton.dataset.optionsMissing;
+    if (isBread) {
+      optionField.hidden = false;
+      if (!breadOptions.length) {
+        optionSelect.innerHTML =
+          '<option value="">Sizes not configured</option>';
+        optionSelect.disabled = true;
+        addButton.dataset.optionsMissing = "true";
+        addButton.textContent = "Options not set";
+        details.querySelector(".product-price").textContent =
+          "Loaf prices not set";
+      } else {
+        optionSelect.disabled = false;
+        optionSelect.innerHTML = breadOptions
+          .map(
+            (option) =>
+              `<option value="${option.key}">${option.label} - ${money(option.price)}</option>`,
+          )
+          .join("");
+        const updateBreadSelection = () => {
+          const option = breadOptions.find(
+            (item) => item.key === optionSelect.value,
+          );
+          if (!option) return;
+          addButton.dataset.breadOption = option.key;
+          details.querySelector(".product-price").textContent = money(
+            option.price,
+          );
+          details.querySelector(".product-qty input").value =
+            cart.find(
+              (item) =>
+                item.product === product._id && item.breadOption === option.key,
+            )?.quantity || 0;
+        };
+        optionSelect.addEventListener("change", updateBreadSelection);
+        updateBreadSelection();
+      }
+    } else {
+      optionField.hidden = true;
+      optionSelect.disabled = false;
+      delete addButton.dataset.breadOption;
+      details.querySelector(".product-qty input").value =
+        cart.find((item) => item.product === product._id)?.quantity || 0;
+    }
+    const isCookie = product.category?.name?.toLowerCase() === "cookie";
+    details.querySelector("#cookie-bundle-note").hidden = !isCookie;
     document.title = product.name;
   } catch (error) {
     details.querySelector(".product-name").textContent = error.message;
@@ -277,46 +392,23 @@ async function initializeProductDetails() {
 }
 
 let carouselIndex = 0;
-let carouselSlides = [
-  { image: "Images/carosel_images/herone.png", alt: "Bakery selection" },
-  { image: "Images/carosel_images/first__.jpeg", alt: "Bakery selection" },
-  { image: "Images/carosel_images/download0.jpeg", alt: "Bakery selection" },
-  { image: "Images/carosel_images/download1.jpeg", alt: "Bakery selection" },
-  { image: "Images/carosel_images/download2.jpeg", alt: "Bakery selection" },
-  { image: "Images/carosel_images/download3.jpeg", alt: "Bakery selection" },
-  { image: "Images/carosel_images/download4.jpeg", alt: "Bakery selection" },
-  { image: "Images/carosel_images/download5.jpeg", alt: "Bakery selection" },
-  { image: "Images/carosel_images/download6.jpeg", alt: "Bakery selection" },
-  { image: "Images/carosel_images/download7.jpeg", alt: "Bakery selection" },
-  { image: "Images/carosel_images/download8.jpeg", alt: "Bakery selection" },
-  { image: "Images/carosel_images/download9.jpeg", alt: "Bakery selection" },
-  { image: "Images/carosel_images/download10.jpeg", alt: "Bakery selection" },
-];
-const defaultCarouselImages = [
-  "herone.png",
-  "first__.jpeg",
-  "download0.jpeg",
-  "download1.jpeg",
-  "download2.jpeg",
-  "download3.jpeg",
-  "download4.jpeg",
-  "download5.jpeg",
-  "download6.jpeg",
-  "download7.jpeg",
-  "download8.jpeg",
-  "download9.jpeg",
-  "download10.jpeg",
-];
+let carouselSlides = [];
 function Carousel2() {
-  if (track)
-    track.innerHTML = `<img src="${carouselSlides[carouselIndex].image}" class="img1" alt="${carouselSlides[carouselIndex].alt || "Bakery selection"}">`;
+  if (!track) return;
+  if (!carouselSlides.length) {
+    track.replaceChildren();
+    return;
+  }
+  track.innerHTML = `<img src="${carouselSlides[carouselIndex].image}" class="img1" alt="${carouselSlides[carouselIndex].alt || "Bakery selection"}">`;
 }
 function carousel_left() {
+  if (!carouselSlides.length) return;
   carouselIndex =
     (carouselIndex + carouselSlides.length - 1) % carouselSlides.length;
   Carousel2();
 }
 function carousel_right() {
+  if (!carouselSlides.length) return;
   carouselIndex = (carouselIndex + 1) % carouselSlides.length;
   Carousel2();
 }
@@ -330,23 +422,20 @@ async function loadCarouselSlides() {
   try {
     const response = await fetch(`${API_BASE}/carousel`);
     const body = await response.json();
-    if (response.ok && body.slides?.length) {
-      carouselSlides = body.slides.map((slide) => ({
-        image:
-          /^https?:\/\//i.test(slide.image) || slide.image.startsWith("/")
-            ? slide.image
-            : `./${slide.image}`,
-        alt: slide.alt || "Bakery selection",
-      }));
-      carouselIndex = 0;
-      Carousel2();
-    }
+    carouselSlides = response.ok
+      ? (body.slides || []).map((slide) => ({
+          image:
+            /^https?:\/\//i.test(slide.image) || slide.image.startsWith("/")
+              ? slide.image
+              : `./${slide.image}`,
+          alt: slide.alt || "Bakery selection",
+        }))
+      : [];
   } catch (error) {
-    carouselSlides = defaultCarouselImages.map((image) => ({
-      image: `Images/carosel_images/${image}`,
-      alt: "Bakery selection",
-    }));
+    carouselSlides = [];
   }
+  carouselIndex = 0;
+  Carousel2();
 }
 loadCarouselSlides();
 loadReviews();
@@ -370,6 +459,14 @@ function addToCart(button) {
     (item) => item._id === button.dataset.productId,
   );
   if (!product) return;
+  if (button.dataset.optionsMissing) return;
+  if (product.breadOptions?.length && !button.dataset.breadOption) {
+    window.location.href = `Product details.html?product=${product._id}`;
+    return;
+  }
+  const selectedBreadOption = product.breadOptions?.find(
+    (option) => option.key === button.dataset.breadOption,
+  );
   const quantity = Math.max(
     1,
     Math.min(
@@ -378,15 +475,23 @@ function addToCart(button) {
         1,
     ),
   );
-  const existing = cart.find((item) => item.product === product._id);
+  const existing = cart.find(
+    (item) =>
+      item.product === product._id &&
+      item.breadOption === selectedBreadOption?.key,
+  );
   if (existing) existing.quantity = Math.min(10, existing.quantity + quantity);
   else
     cart.push({
       product: product._id,
-      name: product.name,
-      price: product.price,
+      name: selectedBreadOption
+        ? `${product.name} (${selectedBreadOption.label})`
+        : product.name,
+      price: selectedBreadOption?.price ?? product.price,
       image: productImage(product),
       quantity,
+      ...(product.cookieType ? { cookieType: product.cookieType } : {}),
+      ...(selectedBreadOption ? { breadOption: selectedBreadOption.key } : {}),
     });
   saveCart();
   button.textContent = "Added";
@@ -396,23 +501,33 @@ function addToCart(button) {
 }
 function updateCartTotals() {
   if (!subTotalBox) return;
-  const subtotal = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0,
-  );
+  const { subtotal, bundleSummary } = calculateCartPricing();
   subTotalBox.textContent = money(subtotal);
-  taxBox.textContent = money(subtotal * 0.75);
-  totalBox.textContent = money(subtotal * 1.75);
+  totalBox.textContent = money(subtotal);
+  const bundleRow = document.getElementById("cookie-bundle-summary");
+  if (bundleRow) {
+    bundleRow.hidden = !bundleSummary;
+    bundleRow.querySelector("span:last-child").textContent = bundleSummary;
+  }
 }
 function renderCart() {
   if (!cartBox) return;
-  cartBox.innerHTML =
-    cart
-      .map(
-        (item) =>
-          `<div class="cart-box-container"><div class="cart-box-product"><img src="./${item.image}" alt="${item.name}"><p>${item.name}</p></div><div class="cart-btns"><div class="cart-price">${money(item.price * item.quantity)}</div><div class="cart-qty"><button class="qty-btn minus-btn" data-product-id="${item.product}">-</button><input class="numinput" type="number" value="${item.quantity}" readonly><button class="qty-btn plus-btn" data-product-id="${item.product}">+</button></div></div></div>`,
-      )
-      .join("") || "<p>Your cart is empty.</p>";
+  if (!cart.length) {
+    cartBox.innerHTML = `
+      <div class="empty-cart-state">
+        <img src="./Images/emptycart.png" alt="Empty cart illustration" />
+        <p>Your cart is empty.</p>
+      </div>
+    `;
+    return;
+  }
+
+  cartBox.innerHTML = cart
+    .map(
+      (item) =>
+        `<div class="cart-box-container"><a class="cart-box-product" href="Product details.html?product=${item.product}"><img src="${productImage(item)}" alt="${item.name}"><p>${item.name}</p></a><div class="cart-btns"><div class="cart-price">${money(item.price * item.quantity)}</div><div class="cart-qty"><button class="qty-btn minus-btn" data-product-id="${item.product}" data-bread-option="${item.breadOption || ""}">-</button><input class="numinput" type="number" value="${item.quantity}" readonly><button class="qty-btn plus-btn" data-product-id="${item.product}" data-bread-option="${item.breadOption || ""}">+</button></div></div></div>`,
+    )
+    .join("");
 }
 
 document.addEventListener("click", (event) => {
@@ -441,7 +556,13 @@ document.addEventListener("click", (event) => {
         ),
       );
       input.value = quantity;
-      const item = cart.find((entry) => entry.product === productId);
+      const breadOption =
+        productDetails.querySelector(".add-to-cart")?.dataset.breadOption ||
+        undefined;
+      const item = cart.find(
+        (entry) =>
+          entry.product === productId && entry.breadOption === breadOption,
+      );
       if (item) {
         if (quantity === 0) cart.splice(cart.indexOf(item), 1);
         else item.quantity = quantity;
@@ -449,8 +570,11 @@ document.addEventListener("click", (event) => {
       }
       return;
     }
+    const breadOption = quantityButton.dataset.breadOption || undefined;
     const item = cart.find(
-      (entry) => entry.product === quantityButton.dataset.productId,
+      (entry) =>
+        entry.product === quantityButton.dataset.productId &&
+        entry.breadOption === breadOption,
     );
     if (!item) return;
     item.quantity += quantityButton.classList.contains("plus-btn") ? 1 : -1;

@@ -3,6 +3,7 @@ const asyncHandler = require("../utils/asyncHandler");
 const auth = require("../middleware/auth.middleware");
 const admin = require("../middleware/admin.middleware");
 const controller = require("../controllers/product.controller");
+const upload = require("../middleware/upload.middleware");
 const router = express.Router();
 
 router.get("/", asyncHandler(controller.getProducts));
@@ -13,7 +14,19 @@ router.get(
   asyncHandler(controller.getAdminProducts),
 );
 router.get("/:id", asyncHandler(controller.getProductById));
-router.post("/", auth, admin, asyncHandler(controller.createProduct));
-router.put("/:id", auth, admin, asyncHandler(controller.updateProduct));
+router.post(
+  "/",
+  auth,
+  admin,
+  upload.single("image"),
+  asyncHandler(controller.createProduct),
+);
+router.put(
+  "/:id",
+  auth,
+  admin,
+  upload.single("image"),
+  asyncHandler(controller.updateProduct),
+);
 router.delete("/:id", auth, admin, asyncHandler(controller.deleteProduct));
 module.exports = router;

@@ -1,6 +1,9 @@
 const Order = require("../models/Order");
 const { createOrder, createGuestOrder } = require("../services/order.service");
-const { notifyOwnerSafely } = require("../services/notification.service");
+const {
+  notifyOwnerSafely,
+  sendEmail,
+} = require("../services/notification.service");
 
 const notifyOrder = (order, account) => {
   const items = order.items
@@ -12,14 +15,34 @@ const notifyOrder = (order, account) => {
     `Order: ${order._id}\nCustomer: ${order.customer?.name || (account ? `${account.firstName} ${account.lastName}` : "Registered customer")}\nEmail: ${order.customer?.email || account?.email || "Account order"}\nPhone: ${order.customer?.phone || account?.phone || "Not provided"}\nDelivery address: ${order.deliveryAddress || "Not provided"}\nItems ordered:\n${items || "No items"}\nTotal: ${order.totalAmount}`,
   );
 };
+const notifyCustomerSafely = (order, account) => {
+  const email = order.customer?.email || account?.email;
+  if (!email) return;
+
+  const items = order.items
+    ?.map((item) => `- ${item.name} x${item.quantity} @ ${item.price} kr`)
+    .join("\n");
+  const name =
+    order.customer?.name ||
+    (account ? `${account.firstName} ${account.lastName}` : "there");
+  sendEmail(
+    email,
+    "We received your order at Amara's Bakery",
+    `Hi ${name},\n\nThank you for your order. Here are your order details:\n\nOrder: ${order._id}\nFulfillment: ${order.deliveryAddress}\nItems:\n${items || "No items"}\n\nTotal: ${order.totalAmount} kr\n\nAmara will get back to you soon.`,
+  ).catch((error) =>
+    console.error("Customer order email failed:", error.message),
+  );
+};
 const create = async (req, res) => {
   const order = await createOrder(req.user._id, req.body.deliveryAddress);
   notifyOrder(order, req.user);
+  notifyCustomerSafely(order, req.user);
   res.status(201).json({ success: true, order });
 };
 const createGuest = async (req, res) => {
-  const order = await createGuestOrder(req.body);
-  notifyOrder(order);
+  const order = await createGuestOrder(req.body, req.user?._id);
+  notifyOrder(order, req.user);
+  notifyCustomerSafely(order, req.user);
   res.status(201).json({ success: true, order });
 };
 const getOrders = async (req, res) =>
@@ -47,7 +70,7 @@ const updateStatus = async (req, res) => {
   const order = await Order.findByIdAndUpdate(
     req.params.id,
     { status: req.body.status },
-    { new: true, runValidators: true },
+    { returnDocument: "after", runValidators: true },
   );
   if (req.body.status === "completed" && previousOrder.status !== "completed") {
     const customer = order.customer || {};

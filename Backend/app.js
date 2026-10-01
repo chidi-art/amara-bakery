@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("node:path");
 const cors = require("cors");
 const errorMiddleware = require("./middleware/error.middleware");
 const authRoutes = require("./routes/auth.routes");
@@ -15,6 +16,7 @@ const messageRoutes = require("./routes/message.routes");
 
 const app = express();
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(cors());
 app.use(
   express.json({

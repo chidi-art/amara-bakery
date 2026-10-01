@@ -19,6 +19,28 @@ const productSchema = new mongoose.Schema(
       min: 0,
     },
 
+    breadOptions: [
+      {
+        key: {
+          type: String,
+          enum: ["single-serving", "classic-loaf", "premium-loaf"],
+          required: true,
+        },
+        label: { type: String, required: true },
+        price: { type: Number, required: true, min: 0 },
+      },
+    ],
+
+    cookieType: {
+      type: String,
+      enum: ["classic", "signature"],
+    },
+
+    isSpecial: {
+      type: Boolean,
+      default: false,
+    },
+
     image: {
       type: String,
       required: true,

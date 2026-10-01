@@ -4,13 +4,27 @@ const admin = require("../middleware/admin.middleware");
 const asyncHandler = require("../utils/asyncHandler");
 const controller = require("../controllers/admin.controller");
 const reviewController = require("../controllers/review.controller");
+const upload = require("../middleware/upload.middleware");
 
 const router = express.Router();
 router.use(auth, admin);
+router.post(
+  "/upload",
+  upload.single("image"),
+  asyncHandler(controller.uploadImage),
+);
 router.get("/overview", asyncHandler(controller.getOverview));
 router.get("/carousel", asyncHandler(controller.getCarousel));
-router.post("/carousel", asyncHandler(controller.createCarousel));
-router.put("/carousel/:id", asyncHandler(controller.updateCarousel));
+router.post(
+  "/carousel",
+  upload.single("image"),
+  asyncHandler(controller.createCarousel),
+);
+router.put(
+  "/carousel/:id",
+  upload.single("image"),
+  asyncHandler(controller.updateCarousel),
+);
 router.delete("/carousel/:id", asyncHandler(controller.deleteCarousel));
 router.get("/reviews", asyncHandler(reviewController.adminList));
 router.put("/reviews/:id", asyncHandler(reviewController.update));

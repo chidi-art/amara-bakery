@@ -2,6 +2,17 @@ const Carousel = require("../models/Carousel");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 const User = require("../models/User");
+const uploadImageToCloudinary = require("../services/image-upload.service");
+
+const uploadImage = async (req, res) => {
+  if (!req.file) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Choose an image file." });
+  }
+  const image = await uploadImageToCloudinary(req.file.buffer, "products");
+  res.status(201).json({ success: true, image });
+};
 
 const getOverview = async (req, res) => {
   const [orders, products, customers, pendingOrders] = await Promise.all([
@@ -17,21 +28,27 @@ const getOverview = async (req, res) => {
 };
 
 const getCarousel = async (req, res) => {
-  const slides = await Carousel.find({ isActive: true }).sort({
-    position: 1,
-    createdAt: 1,
-  });
+  const slides = await Carousel.find({
+    isActive: true,
+    image: { $not: /^Images\/carosel_images\//i },
+  }).sort({ position: 1, createdAt: 1 });
   res.json({ success: true, slides });
 };
 
 const createCarousel = async (req, res) => {
-  const slide = await Carousel.create(req.body);
+  const data = { ...req.body };
+  if (req.file)
+    data.image = await uploadImageToCloudinary(req.file.buffer, "carousel");
+  const slide = await Carousel.create(data);
   res.status(201).json({ success: true, slide });
 };
 
 const updateCarousel = async (req, res) => {
-  const slide = await Carousel.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
+  const data = { ...req.body };
+  if (req.file)
+    data.image = await uploadImageToCloudinary(req.file.buffer, "carousel");
+  const slide = await Carousel.findByIdAndUpdate(req.params.id, data, {
+    returnDocument: "after",
     runValidators: true,
   });
   if (!slide)
@@ -51,6 +68,7 @@ const deleteCarousel = async (req, res) => {
 };
 
 module.exports = {
+  uploadImage,
   getOverview,
   getCarousel,
   createCarousel,

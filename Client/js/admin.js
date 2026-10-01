@@ -8,6 +8,8 @@ const state = {
   slides: [],
   reviews: [],
 };
+const selectedImages = { product: null, slide: null };
+const previewUrls = { product: null, slide: null };
 const statuses = [
   "pending",
   "confirmed",
@@ -25,10 +27,111 @@ const money = (value) =>
   `${Number(value || 0)
     .toFixed(2)
     .replace(/\.00$/, "")} kr`;
+
+$("#order-status-filter").innerHTML += statuses
+  .map(
+    (status) =>
+      `<option value="${status}">${status.replaceAll("_", " ")}</option>`,
+  )
+  .join("");
+
 const imagePath = (value) =>
   /^https?:\/\//i.test(value || "") || (value || "").startsWith("/")
     ? value
     : `./${value}`;
+
+function setImagePreview(previewSelector, value) {
+  const preview = $(previewSelector);
+  preview.src = value ? imagePath(value) : "";
+  preview.hidden = !value;
+}
+
+function configureImageDropzone({
+  zoneSelector,
+  fileSelector,
+  pathSelector,
+  previewSelector,
+  removeSelector,
+  imageKey,
+  messageSelector,
+}) {
+  const zone = $(zoneSelector);
+  const fileInput = $(fileSelector);
+  const pathInput = $(pathSelector);
+  const preview = $(previewSelector);
+  const removeButton = $(removeSelector);
+
+  const clearSelection = () => {
+    selectedImages[imageKey] = null;
+    fileInput.value = "";
+    if (previewUrls[imageKey]) URL.revokeObjectURL(previewUrls[imageKey]);
+    previewUrls[imageKey] = null;
+    preview.src = pathInput.value.trim()
+      ? imagePath(pathInput.value.trim())
+      : "";
+    preview.hidden = !pathInput.value.trim();
+    removeButton.hidden = true;
+  };
+
+  const previewImage = (file) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      clearSelection();
+      showMessage(messageSelector, "Choose an image file.", true);
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      clearSelection();
+      showMessage(messageSelector, "Images must be 5MB or smaller.", true);
+      return;
+    }
+    if (previewUrls[imageKey]) URL.revokeObjectURL(previewUrls[imageKey]);
+    selectedImages[imageKey] = file;
+    previewUrls[imageKey] = URL.createObjectURL(file);
+    preview.src = previewUrls[imageKey];
+    preview.hidden = false;
+    removeButton.hidden = false;
+    showMessage(messageSelector, "Image ready to upload when you save.");
+  };
+
+  pathInput.addEventListener("input", () => {
+    clearSelection();
+    preview.src = imagePath(pathInput.value.trim());
+    preview.hidden = !pathInput.value.trim();
+  });
+  zone.addEventListener("dragover", (event) => {
+    event.preventDefault();
+    zone.classList.add("is-dragging");
+  });
+  zone.addEventListener("dragleave", (event) => {
+    if (!zone.contains(event.relatedTarget)) {
+      zone.classList.remove("is-dragging");
+    }
+  });
+  zone.addEventListener("drop", (event) => {
+    event.preventDefault();
+    zone.classList.remove("is-dragging");
+    previewImage(event.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener("change", () => previewImage(fileInput.files[0]));
+  removeButton.addEventListener("click", clearSelection);
+  return { clearSelection };
+}
+
+function imageFormData(data, imageKey) {
+  const formData = new FormData();
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== null && value !== undefined) {
+      formData.append(
+        key,
+        Array.isArray(value) ? JSON.stringify(value) : value,
+      );
+    }
+  });
+  formData.append("image", selectedImages[imageKey]);
+  return formData;
+}
+
 const escapeHtml = (value) =>
   String(value ?? "").replace(
     /[&<>'"]/g,
@@ -42,7 +145,9 @@ async function request(path, options = {}) {
   const response = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers: {
-      "Content-Type": "application/json",
+      ...(options.body instanceof FormData
+        ? {}
+        : { "Content-Type": "application/json" }),
       Authorization: `Bearer ${token}`,
       ...(options.headers || {}),
     },
@@ -71,9 +176,14 @@ function orderRow(order, compact = false) {
 }
 
 function renderOrders() {
-  $("#orders-table").innerHTML = state.orders.length
-    ? state.orders.map((order) => orderRow(order)).join("")
-    : '<tr><td colspan="6" class="empty">No orders yet.</td></tr>';
+  const selectedStatus = $("#order-status-filter").value;
+  const visibleOrders =
+    selectedStatus === "all"
+      ? state.orders
+      : state.orders.filter((order) => order.status === selectedStatus);
+  $("#orders-table").innerHTML = visibleOrders.length
+    ? visibleOrders.map((order) => orderRow(order)).join("")
+    : `<tr><td colspan="6" class="empty">${state.orders.length ? "No orders match this status." : "No orders yet."}</td></tr>`;
   $("#recent-orders").innerHTML = state.orders.slice(0, 5).length
     ? state.orders
         .slice(0, 5)
@@ -177,18 +287,29 @@ async function updateReview(id, approved) {
 
 function resetProductForm() {
   $("#product-form").reset();
+  productImagePicker.clearSelection();
   $("#product-id").value = "";
   $("#product-available").checked = true;
+  setImagePreview("#product-image-preview", "");
   $("#product-submit").textContent = "Add product";
+  applyProductTypeFields();
 }
 
 function renderProducts() {
   $("#product-list").innerHTML = state.products.length
     ? state.products
-        .map(
-          (product) =>
-            `<article class="item-row"><img src="${escapeHtml(imagePath(product.image))}" alt="${escapeHtml(product.name)}"><div><h3>${escapeHtml(product.name)}</h3><p>${money(product.price)} · ${product.isAvailable ? "Available" : "Hidden"}</p></div><div class="item-actions"><button data-edit-product="${product._id}">Edit</button><button data-delete-product="${product._id}">Delete</button></div></article>`,
-        )
+        .map((product) => {
+          const categoryName = product.category?.name?.toLowerCase();
+          const cookieTag =
+            categoryName === "cookie" && product.cookieType
+              ? `<span class="product-label">${escapeHtml(product.cookieType)}</span>`
+              : "";
+          const specialTag =
+            product.isSpecial || categoryName === "special"
+              ? '<span class="product-label">Special</span>'
+              : "";
+          return `<article class="item-row"><img src="${escapeHtml(imagePath(product.image))}" alt="${escapeHtml(product.name)}"><div><h3>${escapeHtml(product.name)}</h3><p>${money(product.price)} · ${product.isAvailable ? "Available" : "Hidden"} ${cookieTag} ${specialTag}</p></div><div class="item-actions"><button data-edit-product="${product._id}">Edit</button><button data-delete-product="${product._id}">Delete</button></div></article>`;
+        })
         .join("")
     : '<p class="empty">No products found.</p>';
   document
@@ -214,23 +335,78 @@ async function loadProducts() {
   ]);
   state.products = products.products;
   state.categories = categories.categories;
-  $("#product-category").innerHTML = state.categories
-    .map(
-      (category) =>
-        `<option value="${category._id}">${escapeHtml(category.name)}</option>`,
-    )
-    .join("");
+  $("#product-category").innerHTML =
+    '<option value="">Choose bread or cookie</option>' +
+    state.categories
+      .filter((category) => category.name.toLowerCase() !== "special")
+      .map(
+        (category) =>
+          `<option value="${category._id}">${escapeHtml(category.name)}</option>`,
+      )
+      .join("");
+  applyProductTypeFields();
   renderProducts();
+}
+
+function updateBreadStartingPrice() {
+  const prices = [
+    $("#bread-single-price").value,
+    $("#bread-classic-price").value,
+    $("#bread-premium-price").value,
+  ]
+    .filter((value) => value !== "")
+    .map(Number);
+  if (prices.length) $("#product-price").value = Math.min(...prices);
+}
+
+function applyProductTypeFields() {
+  const specialChecked = $("#product-special").checked;
+  const category = state.categories.find(
+    (item) => item._id === $("#product-category").value,
+  );
+  $("#product-category").required = !specialChecked;
+  const isBread = category?.name.toLowerCase() === "bread";
+  const isCookie = category?.name.toLowerCase() === "cookie";
+  $("#bread-options-field").hidden = !isBread;
+  $("#cookie-type-field").hidden = !isCookie;
+  $("#product-price").readOnly = isBread;
+  $("#product-price-label").textContent = isBread ? "Starting price" : "Price";
+  document.querySelectorAll(".bread-price").forEach((input) => {
+    input.required = isBread;
+  });
+  $("#product-cookie-type").required = isCookie;
+  if (isCookie && !$("#product-cookie-type").value) {
+    $("#product-cookie-type").value = "classic";
+  }
+  if (isBread) updateBreadStartingPrice();
 }
 
 function editProduct(id) {
   const product = state.products.find((item) => item._id === id);
   if (!product) return;
+  productImagePicker.clearSelection();
   $("#product-id").value = product._id;
   $("#product-name").value = product.name;
   $("#product-price").value = product.price;
-  $("#product-category").value = product.category?._id || product.category;
+  const productCategoryId = product.category?._id || product.category;
+  const productCategoryName =
+    product.category?.name ||
+    state.categories.find((category) => category._id === productCategoryId)
+      ?.name;
+  const isLegacySpecial = productCategoryName?.toLowerCase() === "special";
+  $("#product-category").value = isLegacySpecial ? "" : productCategoryId;
+  $("#product-special").checked = Boolean(product.isSpecial || isLegacySpecial);
+  const breadOptions = product.breadOptions || [];
+  $("#bread-single-price").value =
+    breadOptions.find((option) => option.key === "single-serving")?.price ?? "";
+  $("#bread-classic-price").value =
+    breadOptions.find((option) => option.key === "classic-loaf")?.price ?? "";
+  $("#bread-premium-price").value =
+    breadOptions.find((option) => option.key === "premium-loaf")?.price ?? "";
+  $("#product-cookie-type").value = product.cookieType || "classic";
+  applyProductTypeFields();
   $("#product-image").value = product.image;
+  setImagePreview("#product-image-preview", product.image);
   $("#product-description").value = product.description || "";
   $("#product-available").checked = product.isAvailable;
   $("#product-submit").textContent = "Save product";
@@ -240,10 +416,59 @@ function editProduct(id) {
 async function saveProduct(event) {
   event.preventDefault();
   const id = $("#product-id").value;
+  if (!selectedImages.product && !$("#product-image").value.trim()) {
+    showMessage("#product-message", "Choose or enter a product image.", true);
+    return;
+  }
+  const category = state.categories.find(
+    (item) => item._id === $("#product-category").value,
+  );
+  const isSpecial = $("#product-special").checked;
+  const specialCategory = state.categories.find(
+    (item) => item.name.toLowerCase() === "special",
+  );
+  const selectedCategory =
+    category || (isSpecial ? specialCategory : undefined);
+  if (!selectedCategory) {
+    showMessage(
+      "#product-message",
+      "Choose a bread or cookie category, or mark the product Special.",
+      true,
+    );
+    return;
+  }
+  const isBread = selectedCategory.name.toLowerCase() === "bread";
+  const breadOptions = isBread
+    ? [
+        {
+          key: "single-serving",
+          label: "Slice / single serving",
+          price: Number($("#bread-single-price").value),
+        },
+        {
+          key: "classic-loaf",
+          label: "Classic loaf",
+          price: Number($("#bread-classic-price").value),
+        },
+        {
+          key: "premium-loaf",
+          label: "Premium loaf",
+          price: Number($("#bread-premium-price").value),
+        },
+      ]
+    : [];
   const product = {
     name: $("#product-name").value.trim(),
-    price: Number($("#product-price").value),
-    category: $("#product-category").value,
+    price: isBread
+      ? Math.min(...breadOptions.map((option) => option.price))
+      : Number($("#product-price").value),
+    category: selectedCategory._id,
+    isSpecial,
+    breadOptions,
+    cookieType:
+      selectedCategory.name.toLowerCase() === "cookie"
+        ? $("#product-cookie-type").value
+        : null,
     image: $("#product-image").value.trim(),
     description: $("#product-description").value.trim(),
     isAvailable: $("#product-available").checked,
@@ -251,7 +476,9 @@ async function saveProduct(event) {
   try {
     await request(`/products${id ? `/${id}` : ""}`, {
       method: id ? "PUT" : "POST",
-      body: JSON.stringify(product),
+      body: selectedImages.product
+        ? imageFormData(product, "product")
+        : JSON.stringify(product),
     });
     await loadProducts();
     resetProductForm();
@@ -274,21 +501,22 @@ async function deleteProduct(id) {
 
 function resetSlideForm() {
   $("#carousel-form").reset();
+  slideImagePicker.clearSelection();
   $("#slide-id").value = "";
+  setImagePreview("#slide-image-preview", "");
   $("#slide-position").value = 0;
   $("#slide-alt").value = "Bakery selection";
   $("#slide-submit").textContent = "Add slide";
 }
 
 function renderSlides() {
-  $("#slide-list").innerHTML = state.slides.length
-    ? state.slides
-        .map(
-          (slide) =>
-            `<article class="item-row"><img src="${escapeHtml(imagePath(slide.image))}" alt="${escapeHtml(slide.alt)}"><div><h3>${escapeHtml(slide.title || "Untitled slide")}</h3><p>Position ${slide.position} · ${escapeHtml(slide.image)}</p></div><div class="item-actions"><button data-edit-slide="${slide._id}">Edit</button><button data-delete-slide="${slide._id}">Delete</button></div></article>`,
-        )
-        .join("")
-    : '<p class="empty">No carousel slides yet.</p>';
+  $("#slide-list").innerHTML =
+    state.slides
+      .map(
+        (slide) =>
+          `<article class="item-row"><img src="${escapeHtml(imagePath(slide.image))}" alt="${escapeHtml(slide.alt)}"><div><h3>${escapeHtml(slide.title || "Untitled slide")}</h3><p>Position ${slide.position} · ${escapeHtml(slide.image)}</p></div><div class="item-actions"><button data-edit-slide="${slide._id}">Edit</button><button data-delete-slide="${slide._id}">Delete</button></div></article>`,
+      )
+      .join("") || '<p class="empty">No carousel slides yet.</p>';
   document
     .querySelectorAll("[data-edit-slide]")
     .forEach((button) =>
@@ -312,8 +540,10 @@ async function loadSlides() {
 function editSlide(id) {
   const slide = state.slides.find((item) => item._id === id);
   if (!slide) return;
+  slideImagePicker.clearSelection();
   $("#slide-id").value = slide._id;
   $("#slide-image").value = slide.image;
+  setImagePreview("#slide-image-preview", slide.image);
   $("#slide-title").value = slide.title || "";
   $("#slide-position").value = slide.position;
   $("#slide-alt").value = slide.alt || "Bakery selection";
@@ -322,6 +552,10 @@ function editSlide(id) {
 async function saveSlide(event) {
   event.preventDefault();
   const id = $("#slide-id").value;
+  if (!selectedImages.slide && !$("#slide-image").value.trim()) {
+    showMessage("#slide-message", "Choose or enter a carousel image.", true);
+    return;
+  }
   const slide = {
     image: $("#slide-image").value.trim(),
     title: $("#slide-title").value.trim(),
@@ -331,7 +565,9 @@ async function saveSlide(event) {
   try {
     await request(`/admin/carousel${id ? `/${id}` : ""}`, {
       method: id ? "PUT" : "POST",
-      body: JSON.stringify(slide),
+      body: selectedImages.slide
+        ? imageFormData(slide, "slide")
+        : JSON.stringify(slide),
     });
     await loadSlides();
     resetSlideForm();
@@ -385,8 +621,34 @@ document
     button.addEventListener("click", () => setView(button.dataset.go)),
   );
 $("#refresh-orders").addEventListener("click", loadOrders);
+$("#order-status-filter").addEventListener("change", renderOrders);
 $("#refresh-reviews").addEventListener("click", loadReviews);
+const productImagePicker = configureImageDropzone({
+  zoneSelector: "#product-image-dropzone",
+  fileSelector: "#product-image-file",
+  pathSelector: "#product-image",
+  previewSelector: "#product-image-preview",
+  removeSelector: "#product-image-remove",
+  imageKey: "product",
+  messageSelector: "#product-message",
+});
+const slideImagePicker = configureImageDropzone({
+  zoneSelector: "#slide-image-dropzone",
+  fileSelector: "#slide-image-file",
+  pathSelector: "#slide-image",
+  previewSelector: "#slide-image-preview",
+  removeSelector: "#slide-image-remove",
+  imageKey: "slide",
+  messageSelector: "#slide-message",
+});
 $("#product-form").addEventListener("submit", saveProduct);
+$("#product-category").addEventListener("change", applyProductTypeFields);
+$("#product-special").addEventListener("change", applyProductTypeFields);
+document
+  .querySelectorAll(".bread-price")
+  .forEach((input) =>
+    input.addEventListener("input", updateBreadStartingPrice),
+  );
 $("#product-cancel").addEventListener("click", resetProductForm);
 $("#carousel-form").addEventListener("submit", saveSlide);
 $("#slide-cancel").addEventListener("click", resetSlideForm);

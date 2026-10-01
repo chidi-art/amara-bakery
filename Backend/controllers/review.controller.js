@@ -52,7 +52,7 @@ const update = async (req, res) => {
       ? { approved: Boolean(req.body.approved) }
       : { rating: req.body.rating, comment: req.body.comment, approved: false };
   const review = await Review.findOneAndUpdate(filter, updates, {
-    new: true,
+    returnDocument: "after",
     runValidators: true,
   });
   if (!review)

@@ -34,11 +34,10 @@ const createOrder = async (userId, deliveryAddress) => {
   return order;
 };
 
-const createGuestOrder = async ({
-  items: requestedItems,
-  deliveryAddress,
-  customer,
-}) => {
+const createGuestOrder = async (
+  { items: requestedItems, deliveryAddress, customer },
+  userId,
+) => {
   if (!Array.isArray(requestedItems) || requestedItems.length === 0) {
     const error = new Error("Order must contain at least one product");
     error.statusCode = 400;
@@ -51,6 +50,8 @@ const createGuestOrder = async ({
   }
 
   const items = [];
+  const cookieUnits = { classic: [], signature: [] };
+  let totalAmount = 0;
   for (const requestedItem of requestedItems) {
     const quantity = Number(requestedItem.quantity);
     if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10) {
@@ -67,19 +68,52 @@ const createGuestOrder = async ({
       error.statusCode = 400;
       throw error;
     }
+    const breadOption = requestedItem.breadOption
+      ? product.breadOptions.find(
+          (option) => option.key === requestedItem.breadOption,
+        )
+      : null;
+    if (product.breadOptions.length && !breadOption) {
+      const error = new Error("Choose a valid bread size for each loaf");
+      error.statusCode = 400;
+      throw error;
+    }
+    const price = breadOption?.price ?? product.price;
+    const cookieType = product.cookieType;
+    if (cookieType === "classic" || cookieType === "signature") {
+      for (let count = 0; count < quantity; count += 1) {
+        cookieUnits[cookieType].push(price);
+      }
+    } else {
+      totalAmount += price * quantity;
+    }
     items.push({
       product: product._id,
-      name: product.name,
-      price: product.price,
+      name: breadOption
+        ? `${product.name} (${breadOption.label})`
+        : product.name,
+      price,
       quantity,
     });
   }
 
-  const totalAmount = items.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0,
-  );
-  return Order.create({ items, totalAmount, deliveryAddress, customer });
+  for (const [type, bundlePrice] of Object.entries({
+    classic: 50,
+    signature: 55,
+  })) {
+    const prices = cookieUnits[type].sort((left, right) => right - left);
+    const bundleCount = Math.floor(prices.length / 3);
+    totalAmount +=
+      bundleCount * bundlePrice +
+      prices.slice(bundleCount * 3).reduce((sum, price) => sum + price, 0);
+  }
+  return Order.create({
+    user: userId,
+    items,
+    totalAmount,
+    deliveryAddress,
+    customer,
+  });
 };
 
 module.exports = { createOrder, createGuestOrder };

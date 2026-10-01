@@ -57,7 +57,7 @@ const removeFromCart = async (req, res) => {
   const cart = await Cart.findOneAndUpdate(
     { user: req.user._id },
     { $pull: { items: { product: req.params.productId } } },
-    { new: true },
+    { returnDocument: "after" },
   ).populate("items.product");
   res.json({ success: true, cart: cart || { user: req.user._id, items: [] } });
 };

@@ -96,7 +96,16 @@
               <div>
                 <h2>Orders</h2>
               </div>
-              <button class="secondary" id="refresh-orders">Refresh</button>
+              <div class="order-controls">
+                <label for="order-status-filter">Status</label>
+                <select
+                  id="order-status-filter"
+                  aria-label="Filter orders by status"
+                >
+                  <option value="all">All statuses</option>
+                </select>
+                <button class="secondary" id="refresh-orders">Refresh</button>
+              </div>
             </div>
             <div class="table-wrap">
               <table>
@@ -132,7 +141,8 @@
                   ><input id="product-name" required />
                 </div>
                 <div class="field">
-                  <label for="product-price">Price</label
+                  <label id="product-price-label" for="product-price"
+                    >Price</label
                   ><input
                     id="product-price"
                     type="number"
@@ -143,21 +153,96 @@
                 </div>
                 <div class="field">
                   <label for="product-category">Category</label
-                  ><select id="product-category" required></select>
+                  ><select id="product-category"></select>
+                </div>
+                <div class="field checkbox-field">
+                  <label for="product-special">
+                    <input id="product-special" type="checkbox" />
+                    Special
+                  </label>
+                </div>
+                <div class="field full" id="bread-options-field" hidden>
+                  <label>Bread option prices</label>
+                  <div class="bread-price-grid">
+                    <div class="field">
+                      <label for="bread-single-price"
+                        >Slice / single serving</label
+                      >
+                      <input
+                        class="bread-price"
+                        id="bread-single-price"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                      />
+                    </div>
+                    <div class="field">
+                      <label for="bread-classic-price">Classic loaf</label>
+                      <input
+                        class="bread-price"
+                        id="bread-classic-price"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                      />
+                    </div>
+                    <div class="field">
+                      <label for="bread-premium-price">Premium loaf</label>
+                      <input
+                        class="bread-price"
+                        id="bread-premium-price"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="field" id="cookie-type-field" hidden>
+                  <label for="product-cookie-type">Cookie tag</label>
+                  <select id="product-cookie-type" required>
+                    <option value="classic">Classic</option>
+                    <option value="signature">Signature</option>
+                  </select>
                 </div>
                 <div class="field full">
                   <label for="product-image">Image path or URL</label
                   ><input
                     id="product-image"
                     placeholder="Images/products/your-image.jpg"
-                    required
                   />
+                  <label
+                    class="image-dropzone"
+                    id="product-image-dropzone"
+                    for="product-image-file"
+                  >
+                    <span>Drop an image here or click to choose</span>
+                    <img
+                      id="product-image-preview"
+                      alt="Product preview"
+                      hidden
+                    />
+                  </label>
+                  <input
+                    id="product-image-file"
+                    type="file"
+                    accept="image/*"
+                    hidden
+                  />
+                  <button
+                    class="secondary"
+                    id="product-image-remove"
+                    type="button"
+                    hidden
+                  >
+                    Remove selected image
+                  </button>
                 </div>
                 <div class="field full">
                   <label for="product-description">Description</label
                   ><textarea id="product-description"></textarea>
                 </div>
-                <div class="field">
+                <div class="field checkbox-field">
                   <label
                     ><input id="product-available" type="checkbox" checked />
                     Available to customers</label
@@ -207,8 +292,33 @@
                   ><input
                     id="slide-image"
                     placeholder="Images/carosel_images/herone.png"
-                    required
                   />
+                  <label
+                    class="image-dropzone"
+                    id="slide-image-dropzone"
+                    for="slide-image-file"
+                  >
+                    <span>Drop an image here or click to choose</span>
+                    <img
+                      id="slide-image-preview"
+                      alt="Carousel preview"
+                      hidden
+                    />
+                  </label>
+                  <input
+                    id="slide-image-file"
+                    type="file"
+                    accept="image/*"
+                    hidden
+                  />
+                  <button
+                    class="secondary"
+                    id="slide-image-remove"
+                    type="button"
+                    hidden
+                  >
+                    Remove selected image
+                  </button>
                 </div>
                 <div class="field">
                   <label for="slide-title">Label (optional)</label
@@ -237,6 +347,6 @@
         </section>
       </main>
     </div>
-    <script src="./js/admin.js"></script>
+    <script src="./js/admin.js?v=20260929-upload-fix"></script>
   </body>
 </html>

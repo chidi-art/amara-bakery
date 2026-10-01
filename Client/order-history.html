@@ -8,19 +8,18 @@
       rel="stylesheet"
     />
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="./css/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cart</title>
+    <title>Order History | Amara's Menu</title>
+    <link rel="stylesheet" href="./css/style.css" />
   </head>
-  <body class="cart-page">
-    <nav class="navbar cart-navbar">
+  <body class="confirmation-page-body">
+    <nav class="navbar">
       <ul class="navlinks">
         <li><a href="Home.html">Home</a></li>
         <li><a href="Menu.html">Menu</a></li>
         <li><a href="contactus.html">Contact</a></li>
-        <li><a href="Cart.html" class="cart-link active">Cart</a></li>
+        <li><a href="Cart.html" class="cart-link">Cart</a></li>
       </ul>
-
       <div class="user-container">
         <div class="nav-user">
           <div class="user-icon" aria-label="User account">
@@ -29,56 +28,21 @@
             </button>
           </div>
         </div>
-
-        <div class="user-dropdown">
-          <div class="user-info">
-            <strong id="user-name">Za Boss</strong>
-            <p id="user-email">zaboss@gmail.com</p>
-          </div>
-          <hr />
-          <a href="order-history.html" class="user-links">Orders</a>
-          <a href="#" class="logout">Log Out</a>
-        </div>
+        <div class="user-dropdown"></div>
       </div>
     </nav>
 
-    <div class="site-body">
-      <div class="cart-container">
-        <h1>Your Cart</h1>
-
-        <div class="cart-content">
-          <div class="cart-products">
-            <h2>Products</h2>
-            <div id="products-list">
-              <div class="product-box"></div>
-            </div>
-          </div>
-
-          <div class="cart-summary">
-            <h2>Order Summary</h2>
-            <div class="amount-details">
-              <div class="amount-row">
-                <span>Subtotal:</span>
-                <span id="subtotal">0 kr</span>
-              </div>
-              <div
-                class="amount-row cookie-bundle-row"
-                id="cookie-bundle-summary"
-                hidden
-              >
-                <span>Cookie bundle pricing:</span>
-                <span></span>
-              </div>
-              <div class="amount-row total">
-                <span>Total:</span>
-                <span id="total">0 kr</span>
-              </div>
-            </div>
-            <a class="checkout-btn" href="checkout.html">Checkout</a>
-          </div>
-        </div>
-      </div>
-    </div>
+    <main class="confirmation-page order-history-page">
+      <section class="order-history-card" aria-labelledby="order-history-title">
+        <header class="order-history-heading">
+          <h1 id="order-history-title">Order history</h1>
+        </header>
+        <p class="order-history-status" id="order-history-status" role="status">
+          Loading orders...
+        </p>
+        <div class="order-history-list" id="order-history-list"></div>
+      </section>
+    </main>
 
     <footer>
       <div class="footer-container reveal">
@@ -91,9 +55,7 @@
           <a href="Home.html">Home</a>
           <a href="Menu.html">Menu</a>
           <a href="Cart.html">Cart</a>
-          <a href="#">Order now</a>
         </div>
-
         <div class="footer-links">
           <h3>Legal</h3>
           <a href="privacy-policy.html">Privacy Policy</a>
@@ -105,5 +67,6 @@
       </div>
     </footer>
     <script src="./js/main.js"></script>
+    <script src="./js/order-history.js"></script>
   </body>
 </html>
