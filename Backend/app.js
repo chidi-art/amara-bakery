@@ -15,8 +15,11 @@ const carouselRoutes = require("./routes/carousel.routes");
 const messageRoutes = require("./routes/message.routes");
 
 const app = express();
-const clientUrl = process.env.CLIENT_URL || "https://amara-bakery-3.onrender.com";
-const allowedOrigins = new Set([new URL(clientUrl).origin]);
+const clientUrl = process.env.CLIENT_URL || "https://amara-bakery-5.onrender.com";
+const allowedOrigins = new Set([
+  new URL(clientUrl).origin,
+  "https://amara-bakery-3.onrender.com",
+]);
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(
