@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const apiBase = window.API_BASE || "https://amara-bakery-2.onrender.com/api";
+    const apiBase = window.API_BASE || "https://amara-bakery-3.onrender.com/api";
     const request = {
       email: emailInput.value.trim(),
       password: passwordInput.value,
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
             : "Login successful. Redirecting...";
         setTimeout(() => {
           window.location.href =
-            body.user.role === "admin" ? "admin.html" : "Home.html";
+            body.user.role === "admin" ? "admin.html" : "index.html";
         }, 500);
       })
       .catch((error) => {

@@ -1,4 +1,4 @@
-const CHECKOUT_API_BASE = window.API_BASE || "https://amara-bakery-2.onrender.com/api";
+const CHECKOUT_API_BASE = window.API_BASE || "https://amara-bakery-3.onrender.com/api";
 const checkoutCart = JSON.parse(localStorage.getItem("cart") || "[]");
 const productCheckoutBox = document.getElementById("product-total");
 const deliveryCheckoutBox = document.getElementById("delivery-total");

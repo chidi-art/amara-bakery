@@ -1,4 +1,4 @@
-const API_BASE = window.API_BASE || "https://amara-bakery-2.onrender.com/api";
+const API_BASE = window.API_BASE || "https://amara-bakery-3.onrender.com/api";
 const message = document.getElementById("validationMessage");
 const params = new URLSearchParams(window.location.search);
 

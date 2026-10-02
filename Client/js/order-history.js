@@ -1,7 +1,7 @@
 const historyStatus = document.getElementById("order-history-status");
 const historyList = document.getElementById("order-history-list");
 const historyToken = localStorage.getItem("bakeryToken");
-const historyApiBase = window.API_BASE || "https://amara-bakery-2.onrender.com/api";
+const historyApiBase = window.API_BASE || "https://amara-bakery-3.onrender.com/api";
 
 const escapeHistoryText = (value) =>
   String(value ?? "").replace(

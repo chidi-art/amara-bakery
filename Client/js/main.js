@@ -1,4 +1,4 @@
-const API_BASE = window.API_BASE || "https://amara-bakery-2.onrender.com/api";
+const API_BASE = window.API_BASE || "https://amara-bakery-3.onrender.com/api";
 const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 const cartBox = document.querySelector(".product-box");
 const userButton = document.getElementById("user-button");
@@ -53,7 +53,7 @@ if (userDropdown) {
       logoutLink.addEventListener("click", (event) => {
         event.preventDefault();
         localStorage.removeItem("bakeryUser");
-        window.location.href = "Home.html";
+        window.location.href = "index.html";
       });
     }
 
@@ -72,7 +72,7 @@ if (userDropdown) {
           });
           localStorage.removeItem("bakeryToken");
           localStorage.removeItem("bakeryUser");
-          window.location.href = "Home.html";
+          window.location.href = "index.html";
         } catch (error) {
           window.alert(error.message || "Unable to delete account.");
         }
