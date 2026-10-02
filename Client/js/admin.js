@@ -1,4 +1,4 @@
-const API_BASE = window.API_BASE || "http://localhost:5000/api";
+const API_BASE = window.API_BASE || "https://amara-bakery-2.onrender.com/api";
 const token = localStorage.getItem("bakeryToken");
 const storedUser = JSON.parse(localStorage.getItem("bakeryUser") || "null");
 const state = {

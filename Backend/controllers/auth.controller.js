@@ -95,7 +95,8 @@ const requestPasswordReset = async (req, res) => {
       .digest("hex");
     user.resetPasswordExpires = Date.now() + 30 * 60 * 1000;
     await user.save();
-    const clientUrl = process.env.CLIENT_URL || "http://localhost:5500/Client";
+    const clientUrl =
+      process.env.CLIENT_URL || "https://amara-bakery-3.onrender.com";
     const resetUrl = `${clientUrl}/reset-password.html?token=${token}`;
     await sendEmail(
       user.email,

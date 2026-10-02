@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const apiBase = window.API_BASE || "http://localhost:5000/api";
+    const apiBase = window.API_BASE || "https://amara-bakery-2.onrender.com/api";
     const request = {
       email: emailInput.value.trim(),
       password: passwordInput.value,

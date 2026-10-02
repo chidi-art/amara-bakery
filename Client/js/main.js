@@ -1,4 +1,4 @@
-const API_BASE = window.API_BASE || "http://localhost:5000/api";
+const API_BASE = window.API_BASE || "https://amara-bakery-2.onrender.com/api";
 const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 const cartBox = document.querySelector(".product-box");
 const userButton = document.getElementById("user-button");
