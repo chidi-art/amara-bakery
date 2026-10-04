@@ -1415,9 +1415,8 @@ body {
   gap: 7px;
   margin: -70px 0 24px;
   padding: 14px 16px;
-  border-left: 3px solid #d8662d;
   background: #fff8ef;
-  color: #55453d;
+  color: #f88f22;
   line-height: 1.5;
 }
 
@@ -2129,6 +2128,42 @@ input[type="number"] {
 @media (max-width: 768px) {
   body {
     overflow-x: hidden;
+  }
+
+  .hero {
+    min-height: 58svh;
+    padding: 72px 16px 100px;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .hero h3 {
+    font-size: clamp(0.9rem, 4vw, 1.2rem);
+    letter-spacing: 0.12em;
+  }
+
+  .hero h1 {
+    margin: 14px 0;
+    font-size: clamp(5rem, 22vw, 8rem);
+    line-height: 0.95;
+  }
+
+  .hero h2 {
+    font-size: clamp(3.5rem, 15vw, 5.5rem);
+    line-height: 0.95;
+  }
+
+  #hero-buttons {
+    width: min(100%, 340px);
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 32px 0 0;
+  }
+
+  #hero-buttons .button {
+    flex: 1 1 130px;
+    max-width: 150px;
   }
 
   .navbar {

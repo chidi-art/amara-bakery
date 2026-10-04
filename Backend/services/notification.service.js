@@ -2,6 +2,9 @@ const nodemailer = require("nodemailer");
 
 let transporter;
 
+const hasEmailProvider = () =>
+  Boolean(process.env.RESEND_API_KEY || getTransporter());
+
 const getTransporter = () => {
   if (transporter) return transporter;
   if (
@@ -19,38 +22,49 @@ const getTransporter = () => {
   return transporter;
 };
 
-const notifyOwner = async (subject, text) => {
+const sendEmail = async (to, subject, text) => {
+  const from =
+    process.env.EMAIL_FROM || process.env.SMTP_FROM || process.env.SMTP_USER;
+  if (!from) throw new Error("EMAIL_FROM or SMTP_FROM is not configured");
+
+  if (process.env.RESEND_API_KEY) {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ from, to: [to], subject, text }),
+    });
+    if (!response.ok) {
+      const details = await response.text();
+      throw new Error(
+        `Resend request failed (${response.status}): ${details || response.statusText}`,
+      );
+    }
+    return response.json();
+  }
+
   const mailer = getTransporter();
+  if (!mailer) throw new Error("SMTP or RESEND_API_KEY is not configured");
+  return mailer.sendMail({ from, to, subject, text });
+};
+
+const notifyOwner = async (subject, text) => {
   const recipient = process.env.OWNER_EMAIL || "amarasbakerymenu@gmail.com";
-  if (!mailer || !recipient) {
+  if (!hasEmailProvider() || !recipient) {
     console.warn(
-      "Owner email notification skipped: configure OWNER_EMAIL or SMTP_USER and SMTP settings.",
+      "Owner email notification skipped: configure RESEND_API_KEY or SMTP settings.",
     );
     return;
   }
-  await mailer.sendMail({
-    from: process.env.SMTP_FROM || process.env.SMTP_USER,
-    to: recipient,
-    subject,
-    text,
-  });
+  await sendEmail(recipient, subject, text);
 };
 
 const notifyOwnerSafely = (subject, text) => {
   notifyOwner(subject, text).catch((error) =>
     console.error("Owner email failed:", error.message),
   );
-};
-
-const sendEmail = async (to, subject, text) => {
-  const mailer = getTransporter();
-  if (!mailer) throw new Error("SMTP is not configured");
-  return mailer.sendMail({
-    from: process.env.SMTP_FROM || process.env.SMTP_USER,
-    to,
-    subject,
-    text,
-  });
 };
 
 module.exports = { notifyOwnerSafely, sendEmail };
