@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
             : "Login successful. Redirecting...";
         setTimeout(() => {
           window.location.href =
-            body.user.role === "admin" ? "admin.html" : "Home.html";
+            body.user.role === "admin" ? "admin.html" : "index.html";
         }, 500);
       })
       .catch((error) => {

@@ -53,7 +53,7 @@ if (userDropdown) {
       logoutLink.addEventListener("click", (event) => {
         event.preventDefault();
         localStorage.removeItem("bakeryUser");
-        window.location.href = "Home.html";
+        window.location.href = "index.html";
       });
     }
 
@@ -72,7 +72,7 @@ if (userDropdown) {
           });
           localStorage.removeItem("bakeryToken");
           localStorage.removeItem("bakeryUser");
-          window.location.href = "Home.html";
+          window.location.href = "index.html";
         } catch (error) {
           window.alert(error.message || "Unable to delete account.");
         }
