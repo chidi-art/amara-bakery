@@ -123,7 +123,7 @@ async function loadReviews() {
     container.innerHTML = reviews
       .map(
         (review) =>
-          `<div class="review-box"><div class="review-txt"><p>${escapeHtml(review.comment)}</p><span>${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}</span></div><div class="reviewer"><div class="reviewer-avatar"></div><p>${escapeHtml(`${review.user?.firstName || ""} ${review.user?.lastName || ""}`.trim() || "Customer")}</p></div></div>`,
+          `<div class="review-box"><div class="review-txt"><span class="review-stars" aria-label="${review.rating} out of 5 stars">${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}</span><p>${escapeHtml(review.comment)}</p></div><div class="reviewer"><div class="reviewer-avatar"></div><p>${escapeHtml(`${review.user?.firstName || ""} ${review.user?.lastName || ""}`.trim() || "Customer")}</p></div></div>`,
       )
       .join("");
   } catch (error) {
