@@ -18,7 +18,7 @@
           <button data-view="carousel">Carousel</button>
         </nav>
         <div class="sidebar-footer">
-          <a href="index.html">Visit storefront</a><br /><button
+          <a href="index.html" target="_blank" rel="noopener noreferrer">Visit storefront</a><br /><button
             id="logout"
             class="item-actions"
             style="border: 0; background: none; color: #f7c287; padding: 8px 0"
@@ -34,7 +34,7 @@
             <h1 id="page-title">Good morning, owner.</h1>
           </div>
           <div class="topbar-actions">
-            <a class="primary" href="index.html">View live site</a>
+            <a class="primary" href="index.html" target="_blank" rel="noopener noreferrer">View live site</a>
             <p id="admin-name"></p>
           </div>
         </header>
@@ -45,16 +45,8 @@
               <strong id="stat-orders">-</strong>
             </article>
             <article class="stat">
-              <p>Pending attention</p>
-              <strong id="stat-pending">-</strong>
-            </article>
-            <article class="stat">
               <p>Products</p>
               <strong id="stat-products">-</strong>
-            </article>
-            <article class="stat">
-              <p>Customers</p>
-              <strong id="stat-customers">-</strong>
             </article>
           </div>
           <div class="dashboard-grid">
@@ -78,15 +70,6 @@
                   <tbody id="recent-orders"></tbody>
                 </table>
               </div>
-            </section>
-            <section class="panel">
-              <div class="panel-heading">
-                <div>
-                  <h2>Notifications</h2>
-                  \
-                </div>
-              </div>
-              <div id="notifications"></div>
             </section>
           </div>
         </section>
@@ -347,6 +330,16 @@
         </section>
       </main>
     </div>
-    <script src="./js/admin.js?v=20260929-upload-fix"></script>
+    <dialog class="details-dialog" id="admin-details-dialog" aria-labelledby="details-title">
+      <form method="dialog">
+        <button class="details-close" aria-label="Close details">&times;</button>
+      </form>
+      <h2 id="details-title"></h2>
+      <div id="details-content"></div>
+      <form method="dialog" class="details-footer">
+        <button class="secondary">Close</button>
+      </form>
+    </dialog>
+    <script src="./js/admin.js?v=20261007-admin-details"></script>
   </body>
 </html>

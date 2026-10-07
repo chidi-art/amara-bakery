@@ -19,7 +19,6 @@ const statuses = [
   "delivered",
   "completed",
   "failed",
-  "cancelled",
 ];
 
 const $ = (selector) => document.querySelector(selector);
@@ -172,7 +171,55 @@ function orderRow(order, compact = false) {
     order.customer?.name ||
     `${order.user?.firstName || ""} ${order.user?.lastName || ""}`.trim() ||
     "Guest customer";
-  return `<tr><td class="order-id">#${escapeHtml(order._id.slice(-6).toUpperCase())}</td><td>${escapeHtml(customer)}</td>${compact ? "" : `<td>${order.items?.reduce((sum, item) => sum + item.quantity, 0) || 0}</td>`}<td>${money(order.totalAmount)}</td>${compact ? "" : `<td>${new Date(order.createdAt).toLocaleDateString()}</td>`}<td>${renderStatusSelect(order)}</td></tr>`;
+  return `<tr><td class="order-id"><button type="button" class="table-link" data-order-details="${escapeHtml(order._id)}">#${escapeHtml(order._id.slice(-6).toUpperCase())}</button></td><td><button type="button" class="table-link" data-customer-details="${escapeHtml(order._id)}">${escapeHtml(customer)}</button></td>${compact ? "" : `<td>${order.items?.reduce((sum, item) => sum + item.quantity, 0) || 0}</td>`}<td>${money(order.totalAmount)}</td>${compact ? "" : `<td>${new Date(order.createdAt).toLocaleDateString()}</td>`}<td>${renderStatusSelect(order)}</td></tr>`;
+}
+
+function showOrderDetails(order) {
+  const customerName =
+    order.customer?.name ||
+    `${order.user?.firstName || ""} ${order.user?.lastName || ""}`.trim() ||
+    "Guest customer";
+  $("#details-title").textContent = `Order #${order._id.slice(-6).toUpperCase()}`;
+  $("#details-content").innerHTML = `
+    <dl class="details-list">
+      <dt>Customer</dt><dd>${escapeHtml(customerName)}</dd>
+      <dt>Email</dt><dd>${escapeHtml(order.customer?.email || order.user?.email || "Not provided")}</dd>
+      <dt>Phone</dt><dd>${escapeHtml(order.customer?.phone || order.user?.phone || "Not provided")}</dd>
+      <dt>Delivery address</dt><dd>${escapeHtml(order.deliveryAddress || "Not provided")}</dd>
+      <dt>Status</dt><dd>${escapeHtml(order.status.replaceAll("_", " "))}</dd>
+      <dt>Placed</dt><dd>${escapeHtml(new Date(order.createdAt).toLocaleString())}</dd>
+    </dl>
+    <h3>Items</h3>
+    <ul class="details-items">${(order.items || [])
+      .map(
+        (item) =>
+          `<li><span>${escapeHtml(item.name)} × ${item.quantity}</span><strong>${money(item.price * item.quantity)}</strong></li>`,
+      )
+      .join("")}</ul>
+    <p class="details-total"><span>Order total</span><strong>${money(order.totalAmount)}</strong></p>
+  `;
+  $("#admin-details-dialog").showModal();
+}
+
+function showCustomerDetails(order) {
+  const name =
+    order.customer?.name ||
+    `${order.user?.firstName || ""} ${order.user?.lastName || ""}`.trim() ||
+    "Guest customer";
+  const address = order.user?.addresses
+    ? Object.values(order.user.addresses).filter(Boolean).join(", ")
+    : "";
+  $("#details-title").textContent = "Customer details";
+  $("#details-content").innerHTML = `
+    <dl class="details-list">
+      <dt>Name</dt><dd>${escapeHtml(name)}</dd>
+      <dt>Email</dt><dd>${escapeHtml(order.customer?.email || order.user?.email || "Not provided")}</dd>
+      <dt>Phone</dt><dd>${escapeHtml(order.customer?.phone || order.user?.phone || "Not provided")}</dd>
+      <dt>Account address</dt><dd>${escapeHtml(address || "Not provided")}</dd>
+      <dt>Address for this order</dt><dd>${escapeHtml(order.deliveryAddress || "Not provided")}</dd>
+    </dl>
+  `;
+  $("#admin-details-dialog").showModal();
 }
 
 function renderOrders() {
@@ -193,16 +240,22 @@ function renderOrders() {
   document
     .querySelectorAll("[data-order-status]")
     .forEach((select) => select.addEventListener("change", updateOrderStatus));
-}
-
-function renderNotifications(stats) {
-  const notices = [];
-  if (stats.pendingOrders)
-    notices.push(
-      `<div class="notification"><i class="notice-dot"></i><div><strong>${stats.pendingOrders} pending order${stats.pendingOrders === 1 ? "" : "s"}</strong><span>Review the queue and set the next status.</span></div></div>`,
-    );
-  $("#notifications").innerHTML =
-    notices.join("") || '<p class="empty">You are all caught up.</p>';
+  document.querySelectorAll("[data-order-details]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const order = state.orders.find(
+        (item) => item._id === button.dataset.orderDetails,
+      );
+      if (order) showOrderDetails(order);
+    });
+  });
+  document.querySelectorAll("[data-customer-details]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const order = state.orders.find(
+        (item) => item._id === button.dataset.customerDetails,
+      );
+      if (order) showCustomerDetails(order);
+    });
+  });
 }
 
 async function updateOrderStatus(event) {
@@ -231,10 +284,7 @@ async function updateOrderStatus(event) {
 async function loadOverview() {
   const { stats } = await request("/admin/overview");
   $("#stat-orders").textContent = stats.orders;
-  $("#stat-pending").textContent = stats.pendingOrders;
   $("#stat-products").textContent = stats.products;
-  $("#stat-customers").textContent = stats.customers;
-  renderNotifications(stats);
 }
 
 async function loadOrders() {

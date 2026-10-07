@@ -50,8 +50,11 @@ const sendEmail = async (to, subject, text) => {
   return mailer.sendMail({ from, to, subject, text });
 };
 
-const notifyOwner = async (subject, text) => {
-  const recipient = process.env.OWNER_EMAIL || "amarasbakerymenu@gmail.com";
+const notifyOwner = async (
+  subject,
+  text,
+  recipient = process.env.OWNER_EMAIL || "amarasbakerymenu@gmail.com",
+) => {
   if (!hasEmailProvider() || !recipient) {
     console.warn(
       "Owner email notification skipped: configure RESEND_API_KEY or SMTP settings.",
@@ -61,10 +64,23 @@ const notifyOwner = async (subject, text) => {
   await sendEmail(recipient, subject, text);
 };
 
-const notifyOwnerSafely = (subject, text) => {
-  notifyOwner(subject, text).catch((error) =>
+const notifyOwnerSafely = (subject, text, recipient) => {
+  notifyOwner(subject, text, recipient).catch((error) =>
     console.error("Owner email failed:", error.message),
   );
 };
 
-module.exports = { notifyOwnerSafely, sendEmail };
+const notifyCustomerSafely = (email, subject, text) => {
+  if (!email) return;
+  if (!hasEmailProvider()) {
+    console.warn(
+      "Customer email notification skipped: configure RESEND_API_KEY or SMTP settings.",
+    );
+    return;
+  }
+  sendEmail(email, subject, text).catch((error) =>
+    console.error("Customer email failed:", error.message),
+  );
+};
+
+module.exports = { notifyOwnerSafely, notifyCustomerSafely, sendEmail };

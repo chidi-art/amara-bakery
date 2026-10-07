@@ -1,7 +1,6 @@
 const Carousel = require("../models/Carousel");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
-const User = require("../models/User");
 const uploadImageToCloudinary = require("../services/image-upload.service");
 
 const uploadImage = async (req, res) => {
@@ -15,15 +14,13 @@ const uploadImage = async (req, res) => {
 };
 
 const getOverview = async (req, res) => {
-  const [orders, products, customers, pendingOrders] = await Promise.all([
+  const [orders, products] = await Promise.all([
     Order.countDocuments(),
     Product.countDocuments(),
-    User.countDocuments({ role: "user" }),
-    Order.countDocuments({ status: "pending" }),
   ]);
   res.json({
     success: true,
-    stats: { orders, products, customers, pendingOrders },
+    stats: { orders, products },
   });
 };
 

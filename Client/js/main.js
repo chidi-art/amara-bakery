@@ -3,6 +3,17 @@ const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 const cartBox = document.querySelector(".product-box");
 const userButton = document.getElementById("user-button");
 const userDropdown = document.querySelector(".user-dropdown");
+const escapeHtml = (value) =>
+  String(value ?? "").replace(
+    /[&<>"']/g,
+    (character) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        character
+      ],
+  );
+const authHeaders = () => ({
+  Authorization: `Bearer ${localStorage.getItem("bakeryToken") || ""}`,
+});
 
 const revealElements = document.querySelectorAll(".reveal");
 const observer = new IntersectionObserver((entries) => {
@@ -39,12 +50,17 @@ if (userDropdown) {
   if (storedUser) {
     userDropdown.innerHTML = `
       <div class="user-info">
-        <strong id="user-name">${storedUser.name}</strong>
-        <p id="user-email">${storedUser.email}</p>
+        <strong id="user-name">${escapeHtml(storedUser.name)}</strong>
+        <p id="user-email">${escapeHtml(storedUser.email)}</p>
       </div>
       <hr />
       <a href="order-history.html" class="user-links">Orders</a>
-      <a href="#" class="user-links delete-account">Delete Account</a>
+      ${
+        storedUser.role === "admin"
+          ? '<a href="admin.html" class="user-links">Admin page</a>'
+          : ""
+      }
+      <button type="button" class="user-links account-settings">Settings</button>
       <a href="#" class="logout">Log Out</a>
     `;
 
@@ -53,31 +69,11 @@ if (userDropdown) {
       logoutLink.addEventListener("click", (event) => {
         event.preventDefault();
         localStorage.removeItem("bakeryUser");
+        localStorage.removeItem("bakeryToken");
         window.location.href = "index.html";
       });
     }
 
-    const deleteAccountLink = userDropdown.querySelector(".delete-account");
-    if (deleteAccountLink) {
-      deleteAccountLink.addEventListener("click", async (event) => {
-        event.preventDefault();
-        if (!window.confirm("Delete your account permanently?")) return;
-
-        try {
-          await fetchJson("/users/me", {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("bakeryToken")}`,
-            },
-          });
-          localStorage.removeItem("bakeryToken");
-          localStorage.removeItem("bakeryUser");
-          window.location.href = "index.html";
-        } catch (error) {
-          window.alert(error.message || "Unable to delete account.");
-        }
-      });
-    }
   } else {
     userDropdown.innerHTML = `
       <div class="user-info">
@@ -88,6 +84,263 @@ if (userDropdown) {
       <a href="login.html" class="user-links">Log In</a>
       <a href="signup.html" class="user-links">Create Account</a>
     `;
+  }
+}
+
+if (storedUser && userDropdown) {
+  const settingsButton = userDropdown.querySelector(".account-settings");
+  const settingsOverlay = document.createElement("div");
+  settingsOverlay.className = "account-overlay";
+  settingsOverlay.hidden = true;
+  settingsOverlay.innerHTML = `
+    <div class="account-backdrop" data-close-settings></div>
+    <aside class="account-panel" role="dialog" aria-modal="true" aria-labelledby="account-settings-title" tabindex="-1">
+      <header class="account-panel-header">
+        <div><p class="account-panel-eyebrow">Your account</p><h2 id="account-settings-title">Settings</h2></div>
+        <button type="button" class="account-close" aria-label="Close settings">&times;</button>
+      </header>
+      <div class="account-actions">
+        <button type="button" class="account-action" id="edit-profile-name">Edit profile name</button>
+        <button type="button" class="account-action" id="show-password-form">Change password</button>
+      </div>
+      <p class="account-status" id="account-feedback" aria-live="polite"></p>
+      <form id="profile-settings-form" class="account-form" hidden>
+        <h3>Profile name</h3>
+        <label for="profile-full-name">Full name</label>
+        <input id="profile-full-name" name="name" type="text" value="${escapeHtml(storedUser.name)}" autocomplete="name" required>
+        <button type="submit" class="account-submit">Save name</button>
+        <button type="button" class="account-cancel-edit" data-cancel-form="profile-settings-form">Cancel</button>
+        <p class="account-status" id="profile-settings-status" aria-live="polite"></p>
+      </form>
+      <form id="password-settings-form" class="account-form" hidden>
+        <h3>Change password</h3>
+        <label for="current-password">Current password</label>
+        <input id="current-password" name="currentPassword" type="password" autocomplete="current-password" required>
+        <label for="new-password">New password</label>
+        <input id="new-password" name="newPassword" type="password" autocomplete="new-password" minlength="6" required>
+        <label for="confirm-password">Confirm new password</label>
+        <input id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password" minlength="6" required>
+        <button type="submit" class="account-submit">Update password</button>
+        <button type="button" class="account-cancel-edit" data-cancel-form="password-settings-form">Cancel</button>
+        <p class="account-status" id="password-settings-status" aria-live="polite"></p>
+      </form>
+      ${
+        storedUser.role === "admin"
+          ? ""
+          : '<button type="button" class="account-delete-trigger">Delete account</button>'
+      }
+    </aside>
+    <div class="delete-confirm-overlay" hidden>
+      <div class="delete-confirm-backdrop"></div>
+      <section class="delete-confirm-box" role="alertdialog" aria-modal="true" aria-labelledby="delete-confirm-title" aria-describedby="delete-confirm-description" tabindex="-1">
+        <h2 id="delete-confirm-title">Delete your account?</h2>
+        <p id="delete-confirm-description">This permanently deletes your account. This action cannot be undone.</p>
+        <p class="account-status" id="delete-account-status" aria-live="polite"></p>
+        <div class="delete-confirm-actions">
+          <button type="button" class="account-cancel-delete">Cancel</button>
+          <button type="button" class="account-confirm-delete">Delete account</button>
+        </div>
+      </section>
+    </div>
+  `;
+  document.body.append(settingsOverlay);
+
+  const closeButton = settingsOverlay.querySelector(".account-close");
+  const accountActions = settingsOverlay.querySelector(".account-actions");
+  const confirmOverlay = settingsOverlay.querySelector(
+    ".delete-confirm-overlay",
+  );
+  const profileForm = settingsOverlay.querySelector("#profile-settings-form");
+  const passwordForm = settingsOverlay.querySelector("#password-settings-form");
+  const resetAccountForms = () => {
+    profileForm.hidden = true;
+    passwordForm.hidden = true;
+    profileForm.reset();
+    passwordForm.reset();
+    settingsOverlay.querySelector("#profile-full-name").value =
+      JSON.parse(localStorage.getItem("bakeryUser") || "null")?.name || "";
+    accountActions.hidden = false;
+    settingsOverlay.querySelector("#edit-profile-name").hidden = false;
+    settingsOverlay.querySelector("#show-password-form").hidden = false;
+  };
+  const showAccountForm = (form, trigger) => {
+    settingsOverlay.querySelector("#account-feedback").textContent = "";
+    form.hidden = false;
+    trigger.hidden = true;
+    accountActions.hidden = true;
+    form.querySelector("input").focus();
+  };
+  settingsOverlay
+    .querySelector("#edit-profile-name")
+    .addEventListener("click", (event) =>
+      showAccountForm(profileForm, event.currentTarget),
+    );
+  settingsOverlay
+    .querySelector("#show-password-form")
+    .addEventListener("click", (event) =>
+      showAccountForm(passwordForm, event.currentTarget),
+    );
+  settingsOverlay.querySelectorAll("[data-cancel-form]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const form = settingsOverlay.querySelector(
+        `#${button.dataset.cancelForm}`,
+      );
+      form.hidden = true;
+      form.reset();
+      if (form === profileForm) {
+        form.querySelector("#profile-full-name").value =
+          JSON.parse(localStorage.getItem("bakeryUser") || "null")?.name || "";
+      }
+      form.querySelector(".account-status").textContent = "";
+      accountActions.hidden = false;
+      settingsOverlay
+        .querySelector(`#${button.dataset.cancelForm === "profile-settings-form" ? "edit-profile-name" : "show-password-form"}`)
+        .hidden = false;
+    });
+  });
+  const closeSettings = () => {
+    resetAccountForms();
+    settingsOverlay.hidden = true;
+    confirmOverlay.hidden = true;
+    document.body.classList.remove("account-panel-open");
+    settingsButton.focus();
+  };
+  settingsButton.addEventListener("click", () => {
+    userDropdown.classList.remove("show");
+    resetAccountForms();
+    settingsOverlay.querySelector("#account-feedback").textContent = "";
+    settingsOverlay.hidden = false;
+    document.body.classList.add("account-panel-open");
+    closeButton.focus();
+  });
+  closeButton.addEventListener("click", closeSettings);
+  settingsOverlay.addEventListener("click", (event) => {
+    if (event.target.hasAttribute("data-close-settings")) closeSettings();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !settingsOverlay.hidden) {
+      if (!confirmOverlay.hidden) confirmOverlay.hidden = true;
+      else closeSettings();
+    }
+  });
+
+  settingsOverlay
+    .querySelector("#profile-settings-form")
+    .addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const status = settingsOverlay.querySelector("#profile-settings-status");
+      const name = new FormData(event.currentTarget).get("name").trim();
+      const parts = name.split(/\s+/);
+      if (parts.length < 2) {
+        status.textContent = "Enter your first and last name.";
+        return;
+      }
+      const submitButton = event.currentTarget.querySelector(
+        'button[type="submit"]',
+      );
+      submitButton.disabled = true;
+      status.textContent = "Saving...";
+      try {
+        const { user } = await fetchJson("/users/me", {
+          method: "PUT",
+          headers: { ...authHeaders(), "Content-Type": "application/json" },
+          body: JSON.stringify({
+            firstName: parts.shift(),
+            lastName: parts.join(" "),
+          }),
+        });
+        const updatedUser = {
+          ...storedUser,
+          ...user,
+          name: `${user.firstName} ${user.lastName}`.trim(),
+        };
+        localStorage.setItem("bakeryUser", JSON.stringify(updatedUser));
+        settingsOverlay.querySelector("#profile-full-name").value =
+          updatedUser.name;
+        userDropdown.querySelector("#user-name").textContent =
+          updatedUser.name;
+        settingsOverlay.querySelector("#account-feedback").textContent =
+          "Name updated.";
+        profileForm.hidden = true;
+        accountActions.hidden = false;
+        settingsOverlay.querySelector("#edit-profile-name").hidden = false;
+      } catch (error) {
+        status.textContent = error.message;
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+
+  settingsOverlay
+    .querySelector("#password-settings-form")
+    .addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const status = settingsOverlay.querySelector(
+        "#password-settings-status",
+      );
+      const values = Object.fromEntries(new FormData(form));
+      if (values.newPassword !== values.confirmPassword) {
+        status.textContent = "The new passwords do not match.";
+        return;
+      }
+      const submitButton = form.querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+      status.textContent = "Updating...";
+      try {
+        const response = await fetchJson("/users/me/password", {
+          method: "PUT",
+          headers: { ...authHeaders(), "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        });
+        form.reset();
+        settingsOverlay.querySelector("#account-feedback").textContent =
+          response.message;
+        form.hidden = true;
+        accountActions.hidden = false;
+        settingsOverlay.querySelector("#show-password-form").hidden = false;
+      } catch (error) {
+        status.textContent = error.message;
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+
+  const deleteTrigger = settingsOverlay.querySelector(
+    ".account-delete-trigger",
+  );
+  if (deleteTrigger) {
+    deleteTrigger.addEventListener("click", () => {
+      settingsOverlay.querySelector("#delete-account-status").textContent = "";
+      confirmOverlay.hidden = false;
+      settingsOverlay.querySelector(".delete-confirm-box").focus();
+    });
+    settingsOverlay
+      .querySelector(".account-cancel-delete")
+      .addEventListener("click", () => {
+        confirmOverlay.hidden = true;
+        deleteTrigger.focus();
+      });
+    settingsOverlay
+      .querySelector(".account-confirm-delete")
+      .addEventListener("click", async (event) => {
+        const confirmButton = event.currentTarget;
+        const status = settingsOverlay.querySelector("#delete-account-status");
+        confirmButton.disabled = true;
+        status.textContent = "Deleting account...";
+        try {
+          await fetchJson("/users/me", {
+            method: "DELETE",
+            headers: authHeaders(),
+          });
+          localStorage.removeItem("bakeryToken");
+          localStorage.removeItem("bakeryUser");
+          window.location.href = "index.html";
+        } catch (error) {
+          status.textContent = error.message;
+          confirmButton.disabled = false;
+        }
+      });
   }
 }
 
@@ -104,15 +357,6 @@ const fetchJson = async (path, options) => {
   if (!response.ok) throw new Error(body.message || "Request failed");
   return body;
 };
-const escapeHtml = (value) =>
-  String(value ?? "").replace(
-    /[&<>"']/g,
-    (character) =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
-        character
-      ],
-  );
-
 async function loadReviews() {
   const container = document.getElementById("review-container");
   if (!container) return;
@@ -283,6 +527,16 @@ window.MenuOptions = MenuOptions;
 window.Category = Category;
 
 async function loadProducts() {
+  const needsCatalog =
+    menuOptions ||
+    document.querySelector(".home-menu-list") ||
+    cartBox ||
+    totalBox ||
+    subTotalBox;
+  if (!needsCatalog) {
+    await initializeProductDetails();
+    return;
+  }
   try {
     const result = await fetchJson("/products?limit=100");
     products = result.products;
@@ -317,7 +571,7 @@ async function loadProducts() {
     window.dispatchEvent(new Event("cartpricingupdated"));
   } catch (error) {
     if (menuOptions)
-      menuOptions.innerHTML = `<p role="alert">${error.message}. Start the backend and run the seed command.</p>`;
+      menuOptions.innerHTML = `<p class="product-load-error" role="alert">Unable to load bakery products. Check your connection or try again shortly.</p>`;
   }
 }
 async function initializeProductDetails() {

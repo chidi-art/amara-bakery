@@ -2,7 +2,7 @@ const Order = require("../models/Order");
 const { createOrder, createGuestOrder } = require("../services/order.service");
 const {
   notifyOwnerSafely,
-  sendEmail,
+  notifyCustomerSafely: sendCustomerEmailSafely,
 } = require("../services/notification.service");
 
 const notifyOrder = (order, account) => {
@@ -13,6 +13,7 @@ const notifyOrder = (order, account) => {
   notifyOwnerSafely(
     "New bakery order received",
     `Order: ${order._id}\nCustomer: ${order.customer?.name || (account ? `${account.firstName} ${account.lastName}` : "Registered customer")}\nEmail: ${order.customer?.email || account?.email || "Account order"}\nPhone: ${order.customer?.phone || account?.phone || "Not provided"}\nDelivery address: ${order.deliveryAddress || "Not provided"}\nItems ordered:\n${items || "No items"}\nTotal: ${order.totalAmount}`,
+    "amarasbakerymenu@gmail.com",
   );
 };
 const notifyCustomerSafely = (order, account) => {
@@ -25,12 +26,10 @@ const notifyCustomerSafely = (order, account) => {
   const name =
     order.customer?.name ||
     (account ? `${account.firstName} ${account.lastName}` : "there");
-  sendEmail(
+  sendCustomerEmailSafely(
     email,
     "We received your order at Amara's Bakery",
-    `Hi ${name},\n\nThank you for your order. Here are your order details:\n\nOrder: ${order._id}\nFulfillment: ${order.deliveryAddress}\nItems:\n${items || "No items"}\n\nTotal: ${order.totalAmount} kr\n\nAmara will get back to you soon.`,
-  ).catch((error) =>
-    console.error("Customer order email failed:", error.message),
+    `Hi ${name},\n\nThank you for your order. Here are your order details:\n\nOrder: ${order._id}\nFulfillment: ${order.deliveryAddress}\nItems:\n${items || "No items"}\n\nTotal: ${order.totalAmount} kr\n\nPlease allow up to 4 days for order preparation. No cancellations or changes are accepted once an order is placed. More details about your order will be communicated soon.`,
   );
 };
 const create = async (req, res) => {
@@ -60,7 +59,7 @@ const getAllOrders = async (req, res) =>
   res.json({
     success: true,
     orders: await Order.find()
-      .populate("user", "firstName lastName email")
+      .populate("user", "firstName lastName email phone addresses")
       .sort({ createdAt: -1 }),
   });
 const updateStatus = async (req, res) => {

@@ -17,12 +17,26 @@ const messageRoutes = require("./routes/message.routes");
 const app = express();
 const clientUrl = process.env.CLIENT_URL || "https://amara-bakery.onrender.com";
 const allowedOrigins = new Set([new URL(clientUrl).origin]);
+const isLocalDevelopmentOrigin = (origin) => {
+  try {
+    const url = new URL(origin);
+    return (
+      url.protocol === "http:" &&
+      ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)
+    );
+  } catch {
+    return false;
+  }
+};
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(
   cors({
     origin: (origin, callback) =>
-      callback(null, !origin || allowedOrigins.has(origin)),
+      callback(
+        null,
+        !origin || allowedOrigins.has(origin) || isLocalDevelopmentOrigin(origin),
+      ),
   }),
 );
 app.use(

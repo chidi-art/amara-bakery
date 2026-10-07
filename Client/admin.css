@@ -147,7 +147,7 @@ h2 {
 }
 .stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
   margin-bottom: 24px;
 }
@@ -174,7 +174,7 @@ h2 {
 }
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1.25fr 0.75fr;
+  grid-template-columns: 1fr;
   gap: 18px;
 }
 .panel {
@@ -272,6 +272,93 @@ td {
 .order-id {
   color: var(--orange-dark);
   font-weight: 700;
+}
+.table-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--orange-dark);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.table-link:hover {
+  color: var(--ink);
+}
+.details-dialog {
+  width: min(560px, calc(100% - 32px));
+  max-height: min(80vh, 760px);
+  padding: 24px;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--cream);
+  color: var(--ink);
+  box-shadow: 0 24px 80px rgba(39, 25, 20, 0.28);
+}
+.details-dialog::backdrop {
+  background: rgba(39, 25, 20, 0.48);
+  backdrop-filter: blur(3px);
+}
+.details-dialog > form:first-child {
+  display: flex;
+  justify-content: flex-end;
+}
+.details-close {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 24px;
+  line-height: 1;
+}
+.details-dialog h2 {
+  margin: 0 0 18px;
+  font:
+    700 26px "Fraunces",
+    serif;
+}
+.details-dialog h3 {
+  margin: 20px 0 8px;
+}
+.details-list {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.7fr) 1.3fr;
+  gap: 10px 14px;
+}
+.details-list dt {
+  color: var(--muted);
+  font-weight: 600;
+}
+.details-list dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.details-items {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+.details-items li,
+.details-total {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.details-total {
+  margin: 16px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.details-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
 }
 .status-select {
   min-width: 132px;

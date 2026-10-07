@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.get('/me', auth, controller.getProfile);
 router.put('/me', auth, controller.updateProfile);
+router.put('/me/password', auth, controller.changePassword);
 router.delete('/me', auth, controller.deleteAccount);
 router.get('/', auth, admin, controller.getUsers);
 router.get('/:id', auth, admin, controller.getUserById);

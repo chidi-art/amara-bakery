@@ -2,7 +2,10 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
-const { sendEmail } = require("../services/notification.service");
+const {
+  notifyCustomerSafely,
+  sendEmail,
+} = require("../services/notification.service");
 
 const publicUser = (user) => {
   const result = user.toObject ? user.toObject() : { ...user };
@@ -50,8 +53,14 @@ const registerUser = async (req, res) => {
       lastName: resolvedLastName,
       email: normalizedEmail,
       password: hashedPassword,
+      role: "user",
       ...(phone ? { phone: phone.trim() } : {}),
     });
+    notifyCustomerSafely(
+      user.email,
+      "Welcome to Amara's Bakery",
+      `Hi ${user.firstName},\n\nYour Amara's Bakery account has been created successfully.\n\nIf you did not create this account, please contact us.`,
+    );
     return res.status(201).json({
       success: true,
       user: publicUser(user),
@@ -137,6 +146,11 @@ const resetPassword = async (req, res) => {
   user.resetPasswordToken = undefined;
   user.resetPasswordExpires = undefined;
   await user.save();
+  notifyCustomerSafely(
+    user.email,
+    "Your Amara's Bakery password was changed",
+    `Hi ${user.firstName},\n\nYour Amara's Bakery account password was changed successfully.\n\nIf you did not make this change, please contact us immediately.`,
+  );
   res.json({
     success: true,
     message: "Password reset successfully. You can now log in.",

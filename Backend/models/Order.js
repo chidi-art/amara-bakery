@@ -61,7 +61,6 @@ const orderSchema = new mongoose.Schema(
         "ready",
         "out_for_delivery",
         "delivered",
-        "cancelled",
         "completed",
         "failed",
       ],
