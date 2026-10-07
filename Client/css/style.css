@@ -2691,6 +2691,29 @@ footer {
   flex-shrink: 0;
 }
 
+@media (max-width: 768px) {
+  .carousel-container {
+    height: clamp(180px, 52vw, 320px);
+  }
+
+  .carousel-track,
+  .carousel-track .img1,
+  .carousel-track img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .carousel-track img {
+    object-fit: cover;
+  }
+
+  .carousel-container-btngroup button {
+    width: 36px;
+    height: 36px;
+    opacity: 1;
+  }
+}
+
 .reveal {
   opacity: 0;
   transform: translateY(150px);
