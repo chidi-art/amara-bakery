@@ -31,6 +31,13 @@ textarea {
 button {
   cursor: pointer;
 }
+
+button:not(:disabled):active,
+.primary:active,
+.secondary:active {
+  filter: brightness(0.88);
+}
+
 .admin-shell {
   min-height: 100vh;
   display: grid;

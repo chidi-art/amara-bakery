@@ -78,6 +78,13 @@ body {
   font-weight: 200;
 }
 
+button:not(:disabled):active,
+input[type="button"]:not(:disabled):active,
+input[type="submit"]:not(:disabled):active,
+.button:active {
+  filter: brightness(0.88);
+}
+
 .auth-page {
   min-height: 100vh;
   display: flex;
@@ -752,9 +759,10 @@ body.account-panel-open {
 }
 
 .navlinks a:hover {
-  color: white;
-  background-color: #f88f22;
-  border-radius: 20px;
+  color: #a8401c;
+  background-color: transparent;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 .navlinks a:focus-visible {

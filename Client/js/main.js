@@ -580,6 +580,9 @@ async function initializeProductDetails() {
   if (!details || !productId) return;
   try {
     const { product } = await fetchJson(`/products/${productId}`);
+    if (!products.some((item) => item._id === product._id)) {
+      products.push(product);
+    }
     details.querySelector(".product-img").src = productImage(product);
     details.querySelector(".product-img").alt = product.name;
     details.querySelector(".product-name").textContent = product.name;
