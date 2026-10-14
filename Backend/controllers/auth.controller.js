@@ -94,24 +94,49 @@ const loginUser = async (req, res) => {
 const getMe = (req, res) => res.json({ success: true, user: req.user });
 
 const requestPasswordReset = async (req, res) => {
-  const email = (req.body.email || "").trim().toLowerCase();
+  const email =
+    typeof req.body?.email === "string" ? req.body.email.trim().toLowerCase() : "";
+  if (!email) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Please enter your email address." });
+  }
+
   const user = await User.findOne({ email });
   if (user) {
     const token = crypto.randomBytes(32).toString("hex");
+    const previousResetPasswordToken = user.resetPasswordToken;
+    const previousResetPasswordExpires = user.resetPasswordExpires;
     user.resetPasswordToken = crypto
       .createHash("sha256")
       .update(token)
       .digest("hex");
     user.resetPasswordExpires = Date.now() + 30 * 60 * 1000;
     await user.save();
-    const clientUrl =
-      process.env.CLIENT_URL || "https://amara-bakery.onrender.com";
-    const resetUrl = `${clientUrl}/reset-password.html?token=${token}`;
-    await sendEmail(
-      user.email,
-      "Reset your Amara's Bakery password",
-      `We received a password reset request. Use this link within 30 minutes:\n\n${resetUrl}\n\nIf you did not request this, you can ignore this email.`,
-    );
+    try {
+      const clientUrl = (
+        process.env.CLIENT_URL || "https://amara-bakery.onrender.com"
+      ).replace(/\/+$/, "");
+      const resetUrl = `${clientUrl}/reset-password.html?token=${token}`;
+      await sendEmail(
+        user.email,
+        "Reset your Amara's Bakery password",
+        `We received a password reset request. Use this link within 30 minutes:\n\n${resetUrl}\n\nIf you did not request this, you can ignore this email.`,
+      );
+    } catch (error) {
+      console.error("Password reset email failed:", error.message);
+      user.resetPasswordToken = previousResetPasswordToken;
+      user.resetPasswordExpires = previousResetPasswordExpires;
+      try {
+        await user.save();
+      } catch (cleanupError) {
+        console.error(
+          "Unable to restore password reset token after email failure:",
+          cleanupError.message,
+        );
+      }
+      throw error;
+    }
   }
   res.json({
     success: true,
