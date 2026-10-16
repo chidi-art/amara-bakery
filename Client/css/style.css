@@ -754,15 +754,17 @@ body.account-panel-open {
   text-decoration: none;
   padding: 10px 10px;
   color: #f88f22;
-  transition: background-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-radius 0.3s ease;
   display: block;
 }
 
 .navlinks a:hover {
-  color: #a8401c;
-  background-color: transparent;
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  color: white;
+  background-color: #f88f22;
+  border-radius: 8px;
 }
 
 .navlinks a:focus-visible {
