@@ -135,7 +135,11 @@ const requestPasswordReset = async (req, res) => {
           cleanupError.message,
         );
       }
-      throw error;
+      return res.status(503).json({
+        success: false,
+        message:
+          "We could not send a password reset email right now. Please try again later.",
+      });
     }
   }
   res.json({

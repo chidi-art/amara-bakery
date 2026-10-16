@@ -19,10 +19,14 @@ if (forgotForm) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      const body = await response.json();
+      const body = await response.json().catch(() => ({}));
       if (!response.ok)
-        throw new Error(body.message || "Unable to send reset link");
-      showMessage(body.message);
+        throw new Error(
+          body.message || "Unable to send the reset link. Please try again.",
+        );
+      showMessage(
+        body.message || "If an account exists for that email, a reset link has been sent.",
+      );
     } catch (error) {
       showMessage(error.message, true);
     }
@@ -47,7 +51,7 @@ if (resetForm) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: params.get("token"), password }),
       });
-      const body = await response.json();
+      const body = await response.json().catch(() => ({}));
       if (!response.ok)
         throw new Error(body.message || "Unable to reset password");
       showMessage(body.message);

@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 
 let transporter;
+const EMAIL_TIMEOUT_MS = 15000;
 
 const hasEmailProvider = () =>
   Boolean(process.env.RESEND_API_KEY || getTransporter());
@@ -18,6 +19,9 @@ const getTransporter = () => {
     port: Number(process.env.SMTP_PORT || 587),
     secure: process.env.SMTP_SECURE === "true",
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD },
+    connectionTimeout: EMAIL_TIMEOUT_MS,
+    greetingTimeout: EMAIL_TIMEOUT_MS,
+    socketTimeout: EMAIL_TIMEOUT_MS,
   });
   return transporter;
 };
@@ -35,6 +39,7 @@ const sendEmail = async (to, subject, text) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ from, to: [to], subject, text }),
+      signal: AbortSignal.timeout(EMAIL_TIMEOUT_MS),
     });
     if (!response.ok) {
       const details = await response.text();
